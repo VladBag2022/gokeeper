@@ -19,12 +19,132 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
+// AuthClient is the client API for Auth service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type AuthClient interface {
+	SignIn(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
+	SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
+}
+
+type authClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
+	return &authClient{cc}
+}
+
+func (c *authClient) SignIn(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
+	out := new(JWT)
+	err := c.cc.Invoke(ctx, "/gokeeper.Auth/SignIn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
+	out := new(JWT)
+	err := c.cc.Invoke(ctx, "/gokeeper.Auth/SingUp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServer is the server API for Auth service.
+// All implementations must embed UnimplementedAuthServer
+// for forward compatibility
+type AuthServer interface {
+	SignIn(context.Context, *Credentials) (*JWT, error)
+	SingUp(context.Context, *Credentials) (*JWT, error)
+	mustEmbedUnimplementedAuthServer()
+}
+
+// UnimplementedAuthServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthServer struct {
+}
+
+func (UnimplementedAuthServer) SignIn(context.Context, *Credentials) (*JWT, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedAuthServer) SingUp(context.Context, *Credentials) (*JWT, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SingUp not implemented")
+}
+func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
+
+// UnsafeAuthServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServer will
+// result in compilation errors.
+type UnsafeAuthServer interface {
+	mustEmbedUnimplementedAuthServer()
+}
+
+func RegisterAuthServer(s grpc.ServiceRegistrar, srv AuthServer) {
+	s.RegisterService(&Auth_ServiceDesc, srv)
+}
+
+func _Auth_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Credentials)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).SignIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gokeeper.Auth/SignIn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).SignIn(ctx, req.(*Credentials))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_SingUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Credentials)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).SingUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gokeeper.Auth/SingUp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).SingUp(ctx, req.(*Credentials))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Auth_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "gokeeper.Auth",
+	HandlerType: (*AuthServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SignIn",
+			Handler:    _Auth_SignIn_Handler,
+		},
+		{
+			MethodName: "SingUp",
+			Handler:    _Auth_SingUp_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "internal/proto/gokeeper.proto",
+}
+
 // KeeperClient is the client API for Keeper service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KeeperClient interface {
-	SignIn(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
-	SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
 	StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*empty.Empty, error)
 	UpdateSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error)
 	DeleteSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error)
@@ -40,24 +160,6 @@ type keeperClient struct {
 
 func NewKeeperClient(cc grpc.ClientConnInterface) KeeperClient {
 	return &keeperClient{cc}
-}
-
-func (c *keeperClient) SignIn(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
-	out := new(JWT)
-	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/SignIn", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *keeperClient) SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
-	out := new(JWT)
-	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/SingUp", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *keeperClient) StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*empty.Empty, error) {
@@ -127,8 +229,6 @@ func (c *keeperClient) GetSecrets(ctx context.Context, in *empty.Empty, opts ...
 // All implementations must embed UnimplementedKeeperServer
 // for forward compatibility
 type KeeperServer interface {
-	SignIn(context.Context, *Credentials) (*JWT, error)
-	SingUp(context.Context, *Credentials) (*JWT, error)
 	StoreSecret(context.Context, *Secret) (*empty.Empty, error)
 	UpdateSecret(context.Context, *ClientSecret) (*empty.Empty, error)
 	DeleteSecret(context.Context, *ClientSecret) (*empty.Empty, error)
@@ -143,12 +243,6 @@ type KeeperServer interface {
 type UnimplementedKeeperServer struct {
 }
 
-func (UnimplementedKeeperServer) SignIn(context.Context, *Credentials) (*JWT, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
-}
-func (UnimplementedKeeperServer) SingUp(context.Context, *Credentials) (*JWT, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SingUp not implemented")
-}
 func (UnimplementedKeeperServer) StoreSecret(context.Context, *Secret) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreSecret not implemented")
 }
@@ -181,42 +275,6 @@ type UnsafeKeeperServer interface {
 
 func RegisterKeeperServer(s grpc.ServiceRegistrar, srv KeeperServer) {
 	s.RegisterService(&Keeper_ServiceDesc, srv)
-}
-
-func _Keeper_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Credentials)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KeeperServer).SignIn(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gokeeper.Keeper/SignIn",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).SignIn(ctx, req.(*Credentials))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Keeper_SingUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Credentials)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KeeperServer).SingUp(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gokeeper.Keeper/SingUp",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).SingUp(ctx, req.(*Credentials))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Keeper_StoreSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -352,14 +410,6 @@ var Keeper_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "gokeeper.Keeper",
 	HandlerType: (*KeeperServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SignIn",
-			Handler:    _Keeper_SignIn_Handler,
-		},
-		{
-			MethodName: "SingUp",
-			Handler:    _Keeper_SingUp_Handler,
-		},
 		{
 			MethodName: "StoreSecret",
 			Handler:    _Keeper_StoreSecret_Handler,
