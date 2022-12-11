@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+package gokeeper;
+
+option go_package = "gokeeper/internal/proto";
+
+message Credentials {
+  string username = 1;
+  string password = 2;
+}
+
+message Text {
+  string text = 1;
+}
+
+message BLOB {
+  bytes blob = 1;
+}
+
+message CreditCard {
+  string number = 1;
+  int32 year = 2;
+  int32 month = 3;
+  int32 cvv = 4;
+  string owner = 5;
+}
+
+message MetaInfo {
+  string text = 1;
+}
+
+enum SecretKind {
+  SECRET_UNSPECIFIED = 0;
+  SECRET_CREDENTIALS = 1;
+  SECRET_TEXT = 2;
+  SECRET_BLOB = 3;
+  SECRET_CREDIT_CARD = 4;
+}
+
+message Secret {
+  bytes data = 1;
+  SecretKind kind = 2;
+}
