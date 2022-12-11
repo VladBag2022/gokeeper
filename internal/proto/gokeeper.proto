@@ -57,3 +57,22 @@ message ClientSecret {
 message ClientSecrets {
   repeated ClientSecret secrets = 1;
 }
+
+message JWT {
+  string data = 1;
+}
+
+service Keeper {
+  rpc SignIn(Credentials) returns (JWT);
+  rpc SingUp(Credentials) returns (JWT);
+
+  rpc StoreSecret(Secret) returns (google.protobuf.Empty);
+  rpc UpdateSecret(ClientSecret) returns (google.protobuf.Empty);
+  rpc DeleteSecret(ClientSecret) returns (google.protobuf.Empty);
+
+  rpc StoreMeta(Meta) returns (google.protobuf.Empty);
+  rpc UpdateMeta(ClientMeta) returns (google.protobuf.Empty);
+  rpc DeleteMeta(ClientMeta) returns (google.protobuf.Empty);
+
+  rpc GetSecrets(google.protobuf.Empty) returns (ClientSecrets);
+}

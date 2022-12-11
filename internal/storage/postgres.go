@@ -106,12 +106,12 @@ func (p *PostgresRepository) StoreSecret(ctx context.Context, userID int64, secr
 }
 
 func (p *PostgresRepository) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
-	_, err := p.database.ExecContext(ctx,"UPDATE secrets SET data = $1 WHERE id = $2", secret.GetData(), id)
+	_, err := p.database.ExecContext(ctx, "UPDATE secrets SET data = $1 WHERE id = $2", secret.GetData(), id)
 	return err
 }
 
 func (p *PostgresRepository) DeleteSecret(ctx context.Context, id int64) error {
-	_, err := p.database.ExecContext(ctx,"DELETE FROM secrets WHERE id = $1", id)
+	_, err := p.database.ExecContext(ctx, "DELETE FROM secrets WHERE id = $1", id)
 	return err
 }
 
@@ -126,12 +126,12 @@ func (p *PostgresRepository) StoreMeta(ctx context.Context, secretID int64, meta
 }
 
 func (p *PostgresRepository) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
-	_, err := p.database.ExecContext(ctx,"UPDATE meta SET text = $1 WHERE id = $2", meta.GetText(), id)
+	_, err := p.database.ExecContext(ctx, "UPDATE meta SET text = $1 WHERE id = $2", meta.GetText(), id)
 	return err
 }
 
 func (p *PostgresRepository) DeleteMeta(ctx context.Context, id int64) error {
-	_, err := p.database.ExecContext(ctx,"DELETE FROM meta WHERE id = $1", id)
+	_, err := p.database.ExecContext(ctx, "DELETE FROM meta WHERE id = $1", id)
 	return err
 }
 
@@ -145,7 +145,7 @@ func (p *PostgresRepository) GetSecrets(ctx context.Context, userID int64) (secr
 	defer rows.Close()
 
 	for rows.Next() {
-		s := &pb.ClientSecret {Secret: &pb.Secret{}}
+		s := &pb.ClientSecret{Secret: &pb.Secret{}}
 		err = rows.Scan(&s.Id, &s.Secret.Data, &s.Secret.Kind)
 		if err != nil {
 			return nil, err
