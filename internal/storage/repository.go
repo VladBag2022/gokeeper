@@ -18,4 +18,6 @@ type Repository interface {
 	StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error)
 	UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error
 	DeleteMeta(ctx context.Context, id int64) error
+
+	GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error)
 }

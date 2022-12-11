@@ -134,3 +134,57 @@ func (p *PostgresRepository) DeleteMeta(ctx context.Context, id int64) error {
 	_, err := p.database.ExecContext(ctx,"DELETE FROM meta WHERE id = $1", id)
 	return err
 }
+
+func (p *PostgresRepository) GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error) {
+	secrets = &pb.ClientSecrets{}
+
+	rows, err := p.database.QueryContext(ctx, "SELECT id, data, kind FROM secrets WHERE user_id = $1", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		s := &pb.ClientSecret {Secret: &pb.Secret{}}
+		err = rows.Scan(&s.Id, &s.Secret.Data, &s.Secret.Kind)
+		if err != nil {
+			return nil, err
+		}
+
+		s.Meta, err = p.getClientMeta(ctx, s.GetId())
+		if err != nil {
+			return nil, err
+		}
+
+		secrets.Secrets = append(secrets.Secrets, s)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	return secrets, nil
+}
+
+func (p *PostgresRepository) getClientMeta(ctx context.Context, secretID int64) (meta []*pb.ClientMeta, err error) {
+	rows, err := p.database.QueryContext(ctx, "SELECT id, text FROM meta WHERE secret_id = $1", secretID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		m := &pb.ClientMeta{Meta: &pb.Meta{}}
+		err = rows.Scan(&m.Id, &m.Meta.Text)
+		if err != nil {
+			return nil, err
+		}
+		meta = append(meta, m)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	return meta, nil
+}

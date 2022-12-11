@@ -42,3 +42,18 @@ message Secret {
   bytes data = 1;
   SecretKind kind = 2;
 }
+
+message ClientMeta {
+  Meta meta = 1;
+  int64 id = 2;
+}
+
+message ClientSecret {
+  Secret secret = 1;
+  repeated ClientMeta meta = 2;
+  int64 id = 3;
+}
+
+message ClientSecrets {
+  repeated ClientSecret secrets = 1;
+}
