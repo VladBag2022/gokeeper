@@ -26,7 +26,7 @@ message CreditCard {
   string owner = 5;
 }
 
-message MetaInfo {
+message Meta {
   string text = 1;
 }
 

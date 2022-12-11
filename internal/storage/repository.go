@@ -11,15 +11,11 @@ type Repository interface {
 	SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error)
 	SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error)
 
-	StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (secretID int64, err error)
-	UpdateSecret(ctx context.Context, secretID int64, secret *pb.Secret) error
-	DeleteSecret(ctx context.Context, secretID int64) error
+	StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error)
+	UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error
+	DeleteSecret(ctx context.Context, id int64) error
 
-	StoreMetaInfo(ctx context.Context, metaInfo *pb.MetaInfo) (id int64, err error)
-	UpdateMetaInfo(ctx context.Context, metaInfoID int64, metaInfo *pb.MetaInfo) error
-	DeleteMetaInfo(ctx context.Context, metaInfoID int64) error
-
-	LinkMetaInfo(ctx context.Context, metaInfoID, secretID int64) error
-	UnlinkMetaInfo(ctx context.Context, metaInfoID, secretID int64) error
-	CountMetaInfoLinks(ctx context.Context, metaInfoID int64) (counter int64, err error)
+	StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error)
+	UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error
+	DeleteMeta(ctx context.Context, id int64) error
 }
