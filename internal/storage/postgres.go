@@ -166,6 +166,31 @@ func (p *PostgresRepository) GetSecrets(ctx context.Context, userID int64) (secr
 	return secrets, nil
 }
 
+func (p *PostgresRepository) IsUserSecret(ctx context.Context, userID, secretID int64) (bool, error) {
+	var count int64
+	row := p.database.QueryRowContext(ctx, "SELECT COUNT(*) FROM secrets WHERE id = $1 AND user_id = $2",
+		secretID, userID)
+	err := row.Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, err
+}
+
+func (p *PostgresRepository) IsUserMeta(ctx context.Context, userID, metaID int64) (bool, error) {
+	var count int64
+	row := p.database.QueryRowContext(ctx,
+		"SELECT COUNT(*) FROM meta "+
+			"JOIN secrets ON secrets.id = meta.secret_id "+
+			"AND meta.id = $1 AND user_id = $2",
+		metaID, userID)
+	err := row.Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, err
+}
+
 func (p *PostgresRepository) getClientMeta(ctx context.Context, secretID int64) (meta []*pb.ClientMeta, err error) {
 	rows, err := p.database.QueryContext(ctx, "SELECT id, text FROM meta WHERE secret_id = $1", secretID)
 	if err != nil {

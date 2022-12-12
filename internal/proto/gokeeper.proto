@@ -30,6 +30,11 @@ message Meta {
   string text = 1;
 }
 
+message StoreMetaRequest {
+  Meta meta = 1;
+  int64 secret_id = 2;
+}
+
 enum SecretKind {
   SECRET_UNSPECIFIED = 0;
   SECRET_CREDENTIALS = 1;
@@ -68,11 +73,11 @@ service Auth {
 }
 
 service Keeper {
-  rpc StoreSecret(Secret) returns (google.protobuf.Empty);
+  rpc StoreSecret(Secret) returns (ClientSecret);
   rpc UpdateSecret(ClientSecret) returns (google.protobuf.Empty);
   rpc DeleteSecret(ClientSecret) returns (google.protobuf.Empty);
 
-  rpc StoreMeta(Meta) returns (google.protobuf.Empty);
+  rpc StoreMeta(StoreMetaRequest) returns (ClientMeta);
   rpc UpdateMeta(ClientMeta) returns (google.protobuf.Empty);
   rpc DeleteMeta(ClientMeta) returns (google.protobuf.Empty);
 
