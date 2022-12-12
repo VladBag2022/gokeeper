@@ -8,32 +8,33 @@ import (
 )
 
 type Manager struct {
-	secretKey     string
+	secretKey     []byte
 	tokenDuration time.Duration
 }
 
 type UserClaims struct {
 	jwt.StandardClaims
+
 	UserID int64 `json:"user_id"`
 }
 
-func NewManager(secretKey string, tokenDuration time.Duration) *Manager {
+func NewManager(secretKey []byte, tokenDuration time.Duration) *Manager {
 	return &Manager{secretKey, tokenDuration}
 }
 
-func (manager *Manager) Generate(userID int64) (string, error) {
+func (m *Manager) Generate(userID int64) (string, error) {
 	claims := UserClaims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(manager.tokenDuration).Unix(),
+			ExpiresAt: time.Now().Add(m.tokenDuration).Unix(),
 		},
 		UserID: userID,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(manager.secretKey))
+	return token.SignedString(m.secretKey)
 }
 
-func (manager *Manager) Verify(accessToken string) (*UserClaims, error) {
+func (m *Manager) Verify(accessToken string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(
 		accessToken,
 		&UserClaims{},
@@ -43,7 +44,7 @@ func (manager *Manager) Verify(accessToken string) (*UserClaims, error) {
 				return nil, fmt.Errorf("unexpected token signing method")
 			}
 
-			return []byte(manager.secretKey), nil
+			return m.secretKey, nil
 		},
 	)
 	if err != nil {

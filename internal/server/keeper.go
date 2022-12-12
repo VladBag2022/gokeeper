@@ -4,9 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"google.golang.org/grpc/metadata"
-
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
@@ -19,8 +18,8 @@ type KeeperServer struct {
 	store storage.Repository
 }
 
-func NewKeeperServer(store storage.Repository) *AuthServer {
-	return &AuthServer{store: store}
+func NewKeeperServer(store storage.Repository) *KeeperServer {
+	return &KeeperServer{store: store}
 }
 
 func (s *KeeperServer) permitSecretID(ctx context.Context, secretID int64) error {
