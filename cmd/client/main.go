@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/server"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client"
 )
 
 var (
@@ -28,5 +28,5 @@ func main() {
 	fmt.Printf("Build date: %s\n", buildDate)
 	fmt.Printf("Build commit: %s\n\n", buildCommit)
 
-	server.Execute()
+	client.Execute()
 }

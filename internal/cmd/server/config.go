@@ -1,32 +1,36 @@
 package server
 
 import (
-	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	common "github.com/VladBag2022/gokeeper/internal/cmd"
 )
 
 var (
-	RootCmd = &cobra.Command{
-		Use: "gokeeperd -a 127.0.0.1:8080 -d postgresql://user:password@127.0.0.1:5432/database -c cert.pem -k key.pem",
+	rootCmd = &cobra.Command{
+		Use: "gokeeperd -a 127.0.0.1:8080 -d postgresql://user:password@127.0.0.1:5432/database " +
+			"-c cert.pem -k key.pem -j 10m",
 		Run: rootRun,
 	}
 
 	configFile string
+	saveConfig bool
 )
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(common.InitConfig(&configFile))
 
-	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
-	RootCmd.PersistentFlags().StringP("address", "a", "", "GRPC listen address: host:port")
-	RootCmd.PersistentFlags().StringP("database", "d", "", "Postgres database DSN")
-	RootCmd.PersistentFlags().StringP("cert", "r", "", "TLS cert file in PEM format")
-	RootCmd.PersistentFlags().StringP("key", "k", "", "TLS key file in PEM format")
-	RootCmd.PersistentFlags().DurationP("jwt", "j", 0, "JWT duration")
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
+	rootCmd.PersistentFlags().StringP("address", "a", "", "GRPC listen address: host:port")
+	rootCmd.PersistentFlags().StringP("database", "d", "", "Postgres database DSN")
+	rootCmd.PersistentFlags().StringP("cert", "t", "", "TLS cert file in PEM format")
+	rootCmd.PersistentFlags().StringP("key", "k", "", "TLS key file in PEM format")
+	rootCmd.PersistentFlags().DurationP("jwt", "j", 0, "JWT duration")
+	rootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
 
 	for key, f := range map[string]string{
 		"ListenAddress": "address",
@@ -35,8 +39,8 @@ func init() {
 		"KeyPEM":        "key",
 		"JWTDuration":   "jwt",
 	} {
-		if err := viper.BindPFlag(key, RootCmd.PersistentFlags().Lookup(f)); err != nil {
-			log.Errorf("failed to bind flag %s. %s", f, err)
+		if err := viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(f)); err != nil {
+			log.Errorf("failed to bind flag %s: %s", f, err)
 		}
 	}
 
@@ -48,7 +52,7 @@ func init() {
 		"JWTDuration":   "JWT_DURATION",
 	} {
 		if err := viper.BindEnv(key, env); err != nil {
-			log.Errorf("failed to bind environment variable %s. %s", env, err)
+			log.Errorf("failed to bind environment variable %s: %s", env, err)
 		}
 	}
 
@@ -56,18 +60,8 @@ func init() {
 	viper.SetDefault("CertPEMFile", "cert.pem")
 	viper.SetDefault("KeyPEMFile", "key.pem")
 	viper.SetDefault("JWTDuration", time.Minute*10)
-}
 
-func initConfig() {
-	if configFile == "" {
-		configFile = os.Getenv("CONFIG")
-	}
-
-	if configFile != "" {
-		viper.SetConfigFile(configFile)
-		err := viper.ReadInConfig()
-		if err != nil {
-			log.Errorf("failed to read config file: %s", err)
-		}
+	if err := rootCmd.MarkPersistentFlagRequired("database"); err != nil {
+		log.Errorf("failed to mark database flag as required: %s", err)
 	}
 }

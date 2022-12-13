@@ -64,12 +64,12 @@ message ClientSecrets {
 }
 
 message JWT {
-  string data = 1;
+  string token = 1;
 }
 
 service Auth {
   rpc SignIn(Credentials) returns (JWT);
-  rpc SingUp(Credentials) returns (JWT);
+  rpc SignUp(Credentials) returns (JWT);
 }
 
 service Keeper {

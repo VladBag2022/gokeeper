@@ -13,7 +13,10 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 )
 
-const UserIDKey = "user_id"
+const (
+	AuthorizationKey = "authorization"
+	UserIDKey        = "user_id"
+)
 
 type AuthInterceptor struct {
 	jwtManager *jwt.Manager
@@ -49,7 +52,7 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (userID 
 		return 0, status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
 
-	values := md["authorization"]
+	values := md[AuthorizationKey]
 	if len(values) == 0 {
 		return 0, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
 	}

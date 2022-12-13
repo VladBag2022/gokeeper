@@ -12,12 +12,19 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
+	common "github.com/VladBag2022/gokeeper/internal/cmd"
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 	"github.com/VladBag2022/gokeeper/internal/server"
 	"github.com/VladBag2022/gokeeper/internal/storage"
 	"github.com/VladBag2022/gokeeper/internal/utils"
 )
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Errorf("failed to execute root command: %s", err)
+	}
+}
 
 func rootRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
@@ -36,13 +43,7 @@ func rootRun(_ *cobra.Command, _ []string) {
 
 	jwtManager := jwt.NewManager(jwtKey, viper.GetDuration("JWTDuration"))
 
-	databaseDSN := viper.GetString("DatabaseDSN")
-	if len(databaseDSN) == 0 {
-		log.Error("Postgres database DSN is required")
-		return
-	}
-
-	store, err := storage.NewPostgresStore(ctx, databaseDSN)
+	store, err := storage.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
 	if err != nil {
 		log.Errorf("failed to connect to Postgres store: %s", err)
 		return
@@ -78,4 +79,6 @@ func rootRun(_ *cobra.Command, _ []string) {
 	<-sigChan
 
 	grpcServer.GracefulStop()
+
+	common.SaveConfigOnDemand(saveConfig, configFile, "./gokeeperd.yaml")
 }

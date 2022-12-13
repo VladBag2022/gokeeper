@@ -33,7 +33,7 @@ func (s *AuthServer) SignIn(ctx context.Context, req *pb.Credentials) (*pb.JWT, 
 		return nil, status.Errorf(codes.Internal, "failed to generate access token")
 	}
 
-	return &pb.JWT{Data: token}, nil
+	return &pb.JWT{Token: token}, nil
 }
 
 func (s *AuthServer) SignUp(ctx context.Context, req *pb.Credentials) (*pb.JWT, error) {
@@ -56,5 +56,5 @@ func (s *AuthServer) SignUp(ctx context.Context, req *pb.Credentials) (*pb.JWT, 
 		return nil, status.Errorf(codes.Internal, "failed to generate access token")
 	}
 
-	return &pb.JWT{Data: token}, nil
+	return &pb.JWT{Token: token}, nil
 }

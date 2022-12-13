@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
 	SignIn(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
-	SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
+	SignUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error)
 }
 
 type authClient struct {
@@ -44,9 +44,9 @@ func (c *authClient) SignIn(ctx context.Context, in *Credentials, opts ...grpc.C
 	return out, nil
 }
 
-func (c *authClient) SingUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
+func (c *authClient) SignUp(ctx context.Context, in *Credentials, opts ...grpc.CallOption) (*JWT, error) {
 	out := new(JWT)
-	err := c.cc.Invoke(ctx, "/gokeeper.Auth/SingUp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gokeeper.Auth/SignUp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *authClient) SingUp(ctx context.Context, in *Credentials, opts ...grpc.C
 // for forward compatibility
 type AuthServer interface {
 	SignIn(context.Context, *Credentials) (*JWT, error)
-	SingUp(context.Context, *Credentials) (*JWT, error)
+	SignUp(context.Context, *Credentials) (*JWT, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -69,8 +69,8 @@ type UnimplementedAuthServer struct {
 func (UnimplementedAuthServer) SignIn(context.Context, *Credentials) (*JWT, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
-func (UnimplementedAuthServer) SingUp(context.Context, *Credentials) (*JWT, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SingUp not implemented")
+func (UnimplementedAuthServer) SignUp(context.Context, *Credentials) (*JWT, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -103,20 +103,20 @@ func _Auth_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_SingUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Credentials)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).SingUp(ctx, in)
+		return srv.(AuthServer).SignUp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gokeeper.Auth/SingUp",
+		FullMethod: "/gokeeper.Auth/SignUp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).SingUp(ctx, req.(*Credentials))
+		return srv.(AuthServer).SignUp(ctx, req.(*Credentials))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -133,8 +133,8 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_SignIn_Handler,
 		},
 		{
-			MethodName: "SingUp",
-			Handler:    _Auth_SingUp_Handler,
+			MethodName: "SignUp",
+			Handler:    _Auth_SignUp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
