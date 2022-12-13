@@ -9,7 +9,8 @@ import (
 )
 
 var textCmd = &cobra.Command{
-	Use: "text secret string",
+	Use: "text <string>",
+	Example: "text secret text",
 	Run: textRun,
 }
 

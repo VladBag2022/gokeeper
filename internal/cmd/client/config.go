@@ -12,7 +12,8 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use: "gokeeper -s 127.0.0.1:8080",
+		Use: "gokeeper -s <host>:<port>",
+		Example: "gokeeper -s 127.0.0.1:8080",
 	}
 
 	configFile string

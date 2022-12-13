@@ -9,7 +9,8 @@ import (
 )
 
 var credentialsCmd = &cobra.Command{
-	Use: "credentials username password",
+	Use: "credentials <username> <password>",
+	Example: "credentials user password",
 	Args: func(cmd *cobra.Command, args []string) error {
 		return cobra.ExactArgs(2)(cmd, args)
 	},

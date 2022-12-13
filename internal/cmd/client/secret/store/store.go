@@ -46,9 +46,9 @@ func storeSecret(secret *pb.Secret) {
 		return
 	}
 
-	clientSecret, sErr := rpcClient.Keeper.StoreSecret(ctx, secret)
-	if sErr != nil {
-		log.Errorf("failed to store secret: %s", sErr)
+	clientSecret, err := rpcClient.Keeper.StoreSecret(ctx, secret)
+	if err != nil {
+		log.Errorf("failed to store secret: %s", err)
 		return
 	}
 	fmt.Printf("Secret ID: %d\n", clientSecret.GetId())
