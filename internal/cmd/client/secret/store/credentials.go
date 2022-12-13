@@ -17,6 +17,10 @@ var credentialsCmd = &cobra.Command{
 	Run: credentialsRun,
 }
 
+func init() {
+	cmd.AddCommand(credentialsCmd)
+}
+
 func credentialsRun(_ *cobra.Command, args []string) {
 	username := args[0]
 	password := args[1]

@@ -15,6 +15,10 @@ var base64Cmd = &cobra.Command{
 	Run: base64Run,
 }
 
+func init() {
+	cmd.AddCommand(base64Cmd)
+}
+
 func base64Run(_ *cobra.Command, args []string) {
 	storeSecret(&pb.Secret{
 		Data: []byte(args[0]),

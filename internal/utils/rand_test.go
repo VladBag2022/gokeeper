@@ -1,32 +1,31 @@
 package utils
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenerateRandomBytes(t *testing.T) {
-	type args struct {
-		n int
-	}
 	tests := []struct {
 		name    string
-		args    args
-		want    []byte
-		wantErr bool
+		n int
 	}{
-		// TODO: Add test cases.
+		{
+			name: "positive - zero-length",
+			n: 0,
+		},
+		{
+			name: "positive - 10 bytes",
+			n: 10,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenerateRandomBytes(tt.args.n)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GenerateRandomBytes() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GenerateRandomBytes() got = %v, want %v", got, tt.want)
-			}
+			got, err := GenerateRandomBytes(tt.n)
+			require.NoError(t, err)
+			assert.Equal(t, tt.n, len(got))
 		})
 	}
 }

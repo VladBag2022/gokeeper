@@ -27,6 +27,10 @@ var deleteCmd = &cobra.Command{
 	Run: deleteRun,
 }
 
+func init() {
+	Cmd.AddCommand(deleteCmd)
+}
+
 func deleteRun(_ *cobra.Command, args []string) {
 	ctx := context.Background()
 

@@ -16,6 +16,10 @@ var getCmd = &cobra.Command{
 	Run: getRun,
 }
 
+func init() {
+	Cmd.AddCommand(getCmd)
+}
+
 func getRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 

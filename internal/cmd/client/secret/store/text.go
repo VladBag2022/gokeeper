@@ -14,6 +14,10 @@ var textCmd = &cobra.Command{
 	Run: textRun,
 }
 
+func init() {
+	cmd.AddCommand(textCmd)
+}
+
 func textRun(_ *cobra.Command, args []string) {
 	text := strings.Join(args, " ")
 	storeSecret(&pb.Secret{

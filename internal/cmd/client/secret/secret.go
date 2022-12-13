@@ -3,7 +3,7 @@ package secret
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret/store"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client"
 )
 
 var Cmd = &cobra.Command{
@@ -11,5 +11,5 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.AddCommand(getCmd, store.Cmd, deleteCmd)
+	client.RootCmd.AddCommand(Cmd)
 }

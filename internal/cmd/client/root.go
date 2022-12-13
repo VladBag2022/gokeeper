@@ -11,7 +11,7 @@ import (
 )
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		log.Errorf("failed to execute root command: %s", err)
 	}
 

@@ -9,21 +9,22 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/VladBag2022/gokeeper/internal/cmd/client"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var Cmd = &cobra.Command{
+var cmd = &cobra.Command{
 	Use: "store",
 }
 
 func init() {
-	Cmd.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
+	cmd.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
 
-	if err := viper.BindPFlags(Cmd.PersistentFlags()); err != nil {
+	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %s", err)
 	}
 
-	Cmd.AddCommand(credentialsCmd, textCmd, base64Cmd, creditCardCmd)
+	secret.Cmd.AddCommand(cmd)
 }
 
 func storeSecret(secret *pb.Secret) {

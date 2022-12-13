@@ -22,6 +22,7 @@ func init() {
 	}
 
 	storeCmd.MarkFlagsMutuallyExclusive("secret", "meta")
+	cmd.AddCommand(storeCmd)
 }
 
 var storeCmd = &cobra.Command{

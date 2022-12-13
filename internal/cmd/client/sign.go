@@ -29,6 +29,8 @@ func init() {
 	if err := signCmd.MarkPersistentFlagRequired("username"); err != nil {
 		log.Errorf("failed to mark username flag as required: %s", err)
 	}
+
+	RootCmd.AddCommand(signCmd)
 }
 
 func signRun(_ *cobra.Command, _ []string) {

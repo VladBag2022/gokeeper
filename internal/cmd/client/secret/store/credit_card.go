@@ -17,6 +17,10 @@ var creditCardCmd = &cobra.Command{
 	Run: creditCardRun,
 }
 
+func init() {
+	cmd.AddCommand(creditCardCmd)
+}
+
 func creditCardRun(_ *cobra.Command, args []string) {
 	number := args[0]
 	month := args[1]
