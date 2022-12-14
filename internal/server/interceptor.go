@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -33,11 +34,12 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+		log.Infof("call %s", info.FullMethod)
 		userID, err := i.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
-		metadata.NewIncomingContext(ctx, metadata.Pairs(UserIDKey, strconv.FormatInt(userID, 10)))
+		ctx = metadata.NewIncomingContext(ctx, metadata.Pairs(UserIDKey, strconv.FormatInt(userID, 10)))
 		return handler(ctx, req)
 	}
 }
