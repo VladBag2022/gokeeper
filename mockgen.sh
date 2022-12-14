@@ -1,0 +1,1 @@
+mockery --name=Store --dir=internal/store --output=internal/mocks
