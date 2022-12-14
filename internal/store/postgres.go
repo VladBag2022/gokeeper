@@ -79,6 +79,13 @@ func (p *PostgresStore) IsUsernameAvailable(
 }
 
 func (p *PostgresStore) SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
+	err = sqlscan.Get(ctx, p.database, &id,
+		"SELECT id FROM users WHERE username = $1 AND password = crypt($2, password)",
+		credentials.GetUsername(), credentials.GetPassword())
+	return
+}
+
+func (p *PostgresStore) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
 	r, err := p.database.ExecContext(ctx,
 		"INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt('bf')))",
 		credentials.GetUsername(), credentials.GetPassword())
@@ -86,13 +93,6 @@ func (p *PostgresStore) SignIn(ctx context.Context, credentials *pb.Credentials)
 		return 0, err
 	}
 	return r.LastInsertId()
-}
-
-func (p *PostgresStore) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	err = sqlscan.Get(ctx, p.database, &id,
-		"SELECT id FROM users WHERE username = $1 AND password = crypt($2, password)",
-		credentials.GetUsername(), credentials.GetPassword())
-	return
 }
 
 func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
