@@ -25,7 +25,7 @@ func NewAuthServer(store store.Store, jwtManager *jwt.Manager) *AuthServer {
 func (s *AuthServer) SignIn(ctx context.Context, req *pb.Credentials) (*pb.JWT, error) {
 	id, err := s.store.SignIn(ctx, req)
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "wrong credentials")
+		return nil, status.Errorf(codes.NotFound, "wrong credentials: %s", err)
 	}
 
 	token, err := s.jwtManager.Generate(id)
