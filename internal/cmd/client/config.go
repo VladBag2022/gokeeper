@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/viper"
 
 	common "github.com/VladBag2022/gokeeper/internal/cmd"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client/meta"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret"
 )
 
 var (
@@ -47,4 +49,6 @@ func init() {
 	if err := RootCmd.MarkPersistentFlagRequired("server"); err != nil {
 		log.Errorf("failed to mark server flag as required: %s", err)
 	}
+
+	RootCmd.AddCommand(signCmd, secret.Cmd, meta.Cmd)
 }

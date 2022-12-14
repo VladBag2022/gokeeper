@@ -15,7 +15,7 @@ var textCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.AddCommand(textCmd)
+	Cmd.AddCommand(textCmd)
 }
 
 func textRun(_ *cobra.Command, args []string) {

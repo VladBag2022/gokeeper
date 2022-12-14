@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/VladBag2022/gokeeper/internal/cmd"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -29,14 +30,12 @@ func init() {
 	if err := signCmd.MarkPersistentFlagRequired("username"); err != nil {
 		log.Errorf("failed to mark username flag as required: %s", err)
 	}
-
-	RootCmd.AddCommand(signCmd)
 }
 
 func signRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := NewRPCClient()
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}

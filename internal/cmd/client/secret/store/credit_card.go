@@ -18,7 +18,7 @@ var creditCardCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.AddCommand(creditCardCmd)
+	Cmd.AddCommand(creditCardCmd)
 }
 
 func creditCardRun(_ *cobra.Command, args []string) {

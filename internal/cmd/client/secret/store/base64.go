@@ -16,7 +16,7 @@ var base64Cmd = &cobra.Command{
 }
 
 func init() {
-	cmd.AddCommand(base64Cmd)
+	Cmd.AddCommand(base64Cmd)
 }
 
 func base64Run(_ *cobra.Command, args []string) {

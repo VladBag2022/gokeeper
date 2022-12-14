@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/client"
+	"github.com/VladBag2022/gokeeper/internal/cmd"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -28,7 +28,7 @@ var deleteCmd = &cobra.Command{
 }
 
 func init() {
-	cmd.AddCommand(deleteCmd)
+	Cmd.AddCommand(deleteCmd)
 }
 
 func deleteRun(_ *cobra.Command, args []string) {
@@ -39,7 +39,7 @@ func deleteRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	rpcClient, err := client.NewRPCClient()
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}

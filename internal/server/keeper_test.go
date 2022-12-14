@@ -2,11 +2,11 @@ package server
 
 import (
 	"context"
-	"github.com/stretchr/testify/mock"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 
@@ -19,25 +19,25 @@ func newTestCtxWithUserID(userID string) context.Context {
 
 func TestKeeperServer_permitSecretID(t *testing.T) {
 	tests := []struct {
-		name    string
-		ctxUserID  string
-		secretID int64
+		name         string
+		ctxUserID    string
+		secretID     int64
 		isUserSecret bool
-		wantErr bool
+		wantErr      bool
 	}{
 		{
-			name: "positive test",
-			ctxUserID: "100",
-			secretID: 100,
+			name:         "positive test",
+			ctxUserID:    "100",
+			secretID:     100,
 			isUserSecret: true,
-			wantErr: false,
+			wantErr:      false,
 		},
 		{
-			name: "negative test - not user secret",
-			ctxUserID: "100",
-			secretID: 100,
+			name:         "negative test - not user secret",
+			ctxUserID:    "100",
+			secretID:     100,
 			isUserSecret: false,
-			wantErr: true,
+			wantErr:      true,
 		},
 	}
 	for _, tt := range tests {
@@ -48,7 +48,7 @@ func TestKeeperServer_permitSecretID(t *testing.T) {
 			s := mocks.NewStore(t)
 			s.On("IsUserSecret", mock.Anything, userID, tt.secretID).Return(tt.isUserSecret, nil)
 
-			ks := &KeeperServer{store:s}
+			ks := &KeeperServer{store: s}
 			ctx := newTestCtxWithUserID(tt.ctxUserID)
 			err = ks.permitSecretID(ctx, tt.secretID)
 
@@ -63,25 +63,25 @@ func TestKeeperServer_permitSecretID(t *testing.T) {
 
 func TestKeeperServer_permitMetaID(t *testing.T) {
 	tests := []struct {
-		name    string
+		name       string
 		ctxUserID  string
-		metaID int64
+		metaID     int64
 		isUserMeta bool
-		wantErr bool
+		wantErr    bool
 	}{
 		{
-			name: "positive test",
-			ctxUserID: "100",
-			metaID: 100,
+			name:       "positive test",
+			ctxUserID:  "100",
+			metaID:     100,
 			isUserMeta: true,
-			wantErr: false,
+			wantErr:    false,
 		},
 		{
-			name: "negative test - not user meta",
-			ctxUserID: "100",
-			metaID: 100,
+			name:       "negative test - not user meta",
+			ctxUserID:  "100",
+			metaID:     100,
 			isUserMeta: false,
-			wantErr: true,
+			wantErr:    true,
 		},
 	}
 	for _, tt := range tests {
@@ -92,7 +92,7 @@ func TestKeeperServer_permitMetaID(t *testing.T) {
 			s := mocks.NewStore(t)
 			s.On("IsUserMeta", mock.Anything, userID, tt.metaID).Return(tt.isUserMeta, nil)
 
-			ks := &KeeperServer{store:s}
+			ks := &KeeperServer{store: s}
 			ctx := newTestCtxWithUserID(tt.ctxUserID)
 			err = ks.permitMetaID(ctx, tt.metaID)
 
@@ -108,7 +108,7 @@ func TestKeeperServer_permitMetaID(t *testing.T) {
 func Test_userIDFromContext(t *testing.T) {
 	tests := []struct {
 		name       string
-		setUserID bool
+		setUserID  bool
 		ctxUserID  string
 		wantUserID int64
 		wantErr    bool

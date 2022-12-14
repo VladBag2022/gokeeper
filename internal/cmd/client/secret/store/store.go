@@ -8,29 +8,26 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/client"
-	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret"
+	"github.com/VladBag2022/gokeeper/internal/cmd"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var cmd = &cobra.Command{
+var Cmd = &cobra.Command{
 	Use: "store",
 }
 
 func init() {
-	cmd.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
+	Cmd.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
 
-	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+	if err := viper.BindPFlags(Cmd.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %s", err)
 	}
-
-	secret.Cmd.AddCommand(cmd)
 }
 
 func storeSecret(secret *pb.Secret) {
 	ctx := context.Background()
 
-	rpcClient, err := client.NewRPCClient()
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}

@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/client"
+	"github.com/VladBag2022/gokeeper/internal/cmd"
 )
 
 var getCmd = &cobra.Command{
@@ -23,7 +23,7 @@ func init() {
 func getRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := client.NewRPCClient()
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}

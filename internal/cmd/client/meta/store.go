@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/VladBag2022/gokeeper/internal/cmd/client"
+	"github.com/VladBag2022/gokeeper/internal/cmd"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -22,7 +22,7 @@ func init() {
 	}
 
 	storeCmd.MarkFlagsMutuallyExclusive("secret", "meta")
-	cmd.AddCommand(storeCmd)
+	Cmd.AddCommand(storeCmd)
 }
 
 var storeCmd = &cobra.Command{
@@ -40,7 +40,7 @@ func storeRun(_ *cobra.Command, args []string) {
 	text := strings.Join(args[1:], " ")
 	meta := &pb.Meta{Text: text}
 
-	rpcClient, err := client.NewRPCClient()
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}
