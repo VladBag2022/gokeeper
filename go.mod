@@ -8,6 +8,7 @@ require (
 	github.com/georgysavva/scany v1.2.1
 	github.com/golang/protobuf v1.5.2
 	github.com/jackc/pgx/v4 v4.17.2
+	github.com/jmoiron/sqlx v1.3.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.14.0

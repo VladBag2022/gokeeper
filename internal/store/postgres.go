@@ -2,23 +2,23 @@ package store
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/georgysavva/scany/sqlscan"
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 type PostgresStore struct {
-	database *sql.DB
+	database *sqlx.DB
 }
 
 func NewPostgresStore(
 	ctx context.Context,
 	databaseDSN string,
 ) (*PostgresStore, error) {
-	db, err := sql.Open("pgx", databaseDSN)
+	db, err := sqlx.Open("pgx", databaseDSN)
 	if err != nil {
 		return nil, err
 	}
@@ -45,13 +45,13 @@ func (p *PostgresStore) createSchema(ctx context.Context) error {
 			"username TEXT NOT NULL UNIQUE, " +
 			"password TEXT NOT NULL)",
 		"CREATE TABLE IF NOT EXISTS secrets (" +
-			"id BIGINT PRIMARY KEY, " +
+			"id SERIAL PRIMARY KEY, " +
 			"user_id INTEGER NOT NULL, " +
 			"data BYTEA NOT NULL, " +
 			"kind INTEGER NOT NULL, " +
 			"FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE)",
 		"CREATE TABLE IF NOT EXISTS meta (" +
-			"id BIGINT PRIMARY KEY, " +
+			"id SERIAL PRIMARY KEY, " +
 			"secret_id INTEGER NOT NULL, " +
 			"text TEXT NOT NULL, " +
 			"FOREIGN KEY (secret_id) REFERENCES secrets (id) ON DELETE CASCADE)",
@@ -86,23 +86,15 @@ func (p *PostgresStore) SignIn(ctx context.Context, credentials *pb.Credentials)
 }
 
 func (p *PostgresStore) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	r, err := p.database.ExecContext(ctx,
-		"INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt('bf')))",
+	return id, p.database.GetContext(ctx, &id,
+		"INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt('bf'))) RETURNING id",
 		credentials.GetUsername(), credentials.GetPassword())
-	if err != nil {
-		return 0, err
-	}
-	return r.LastInsertId()
 }
 
 func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
-	r, err := p.database.ExecContext(ctx,
-		"INSERT INTO secrets (user_id, data, type_id) VALUES ($1, $2, $3)",
+	return id, p.database.GetContext(ctx, &id,
+		"INSERT INTO secrets (user_id, data, kind) VALUES ($1, $2, $3) RETURNING id",
 		userID, secret.GetData(), secret.GetKind())
-	if err != nil {
-		return 0, err
-	}
-	return r.LastInsertId()
 }
 
 func (p *PostgresStore) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
@@ -116,13 +108,9 @@ func (p *PostgresStore) DeleteSecret(ctx context.Context, id int64) error {
 }
 
 func (p *PostgresStore) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error) {
-	r, err := p.database.ExecContext(ctx,
-		"INSERT INTO meta (secret_id, text) VALUES ($1, $2)",
+	return id, p.database.GetContext(ctx, &id,
+		"INSERT INTO meta (secret_id, text) VALUES ($1, $2) RETURNING id",
 		secretID, meta.GetText())
-	if err != nil {
-		return 0, err
-	}
-	return r.LastInsertId()
 }
 
 func (p *PostgresStore) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
