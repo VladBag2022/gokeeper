@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 	"github.com/VladBag2022/gokeeper/internal/mocks"
@@ -45,9 +46,9 @@ func TestAuthServer_SignIn(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := mocks.NewStore(t)
 			if tt.authorized {
-				s.On("SignIn", mock.Anything, tt.req).Return(int64(0), errors.New("wrong credentials"))
-			} else {
 				s.On("SignIn", mock.Anything, tt.req).Return(int64(0), nil)
+			} else {
+				s.On("SignIn", mock.Anything, tt.req).Return(int64(0), errors.New("wrong credentials"))
 			}
 
 			as := &AuthServer{
@@ -55,12 +56,11 @@ func TestAuthServer_SignIn(t *testing.T) {
 				jwtManager: newTestJWTManager(),
 			}
 			got, err := as.SignIn(context.Background(), tt.req)
-			if (err != nil) != tt.authorized {
-				t.Errorf("SignIn() error = %v, authorized %v", err, tt.authorized)
-				return
-			}
-			if err == nil {
+			if tt.authorized {
+				require.NoError(t, err)
 				assert.NotEmpty(t, got.GetToken())
+			} else {
+				assert.Error(t, err)
 			}
 		})
 	}
@@ -102,12 +102,11 @@ func TestAuthServer_SignUp(t *testing.T) {
 				jwtManager: newTestJWTManager(),
 			}
 			got, err := as.SignUp(context.Background(), tt.req)
-			if (err != nil) == tt.available {
-				t.Errorf("SignIn() error = %v, available %v", err, tt.available)
-				return
-			}
-			if err == nil {
+			if tt.available {
+				require.NoError(t, err)
 				assert.NotEmpty(t, got.GetToken())
+			} else {
+				assert.Error(t, err)
 			}
 		})
 	}

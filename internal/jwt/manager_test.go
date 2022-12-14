@@ -101,11 +101,10 @@ func TestManager_Verify(t *testing.T) {
 				tokenDuration: tt.fields.tokenDuration,
 			}
 			got, err := m.Verify(tt.accessToken)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Verify() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if err == nil {
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				require.NoError(t, err)
 				assert.Equal(t, got.UserID, tt.wantUserID)
 			}
 		})
