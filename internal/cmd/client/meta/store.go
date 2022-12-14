@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	storeCmd.PersistentFlags().IntP("secret", "s", 0, "secret ID")
+	storeCmd.PersistentFlags().IntP("secret", "x", 0, "secret ID")
 	storeCmd.PersistentFlags().IntP("meta", "m", 0, "meta ID to update")
 
 	if err := viper.BindPFlags(storeCmd.PersistentFlags()); err != nil {
@@ -26,18 +26,15 @@ func init() {
 }
 
 var storeCmd = &cobra.Command{
-	Use:     "store [-s <secret_id>] [-m <meta_id>] <string>",
+	Use:     "store [-x <secret_id>] [-m <meta_id>] <string>",
 	Example: "store -s 1 top secret",
-	Args: func(cmd *cobra.Command, args []string) error {
-		return cobra.MinimumNArgs(1)(cmd, args)
-	},
 	Run: storeRun,
 }
 
 func storeRun(_ *cobra.Command, args []string) {
 	ctx := context.Background()
 
-	text := strings.Join(args[1:], " ")
+	text := strings.Join(args, " ")
 	meta := &pb.Meta{Text: text}
 
 	rpcClient, err := cmd.NewGRPCClient()
