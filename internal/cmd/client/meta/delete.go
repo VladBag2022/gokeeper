@@ -12,13 +12,13 @@ import (
 )
 
 var deleteCmd = &cobra.Command{
-	Use: "delete <meta_id>",
+	Use:     "delete <meta_id>",
 	Example: "delete 1",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
 			return err
 		}
-		_, err := strconv.ParseInt(args[0], 10,  64)
+		_, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func init() {
 func deleteRun(_ *cobra.Command, args []string) {
 	ctx := context.Background()
 
-	metaID, err := strconv.ParseInt(args[0], 10,  64)
+	metaID, err := strconv.ParseInt(args[0], 10, 64)
 	if err != nil {
 		return
 	}

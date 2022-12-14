@@ -14,7 +14,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use: "gokeeperd -a <host>:<port> -d <database_dsn> -c <cert_pem> -k <key_pem> -j <jwt_duration>",
 		Example: "gokeeperd -a 127.0.0.1:8080 -d postgresql://user:password@127.0.0.1:5432/database " +
-		"-c cert.pem -k key.pem -j 10m",
+			"-c cert.pem -k key.pem -j 10m",
 		Run: rootRun,
 	}
 

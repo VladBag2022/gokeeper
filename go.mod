@@ -6,7 +6,6 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/georgysavva/scany v1.2.1
-	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.5.2
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/sirupsen/logrus v1.4.2
@@ -43,6 +42,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
 	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect

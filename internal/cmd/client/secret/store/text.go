@@ -9,9 +9,9 @@ import (
 )
 
 var textCmd = &cobra.Command{
-	Use: "text <string>",
+	Use:     "text <string>",
 	Example: "text secret text",
-	Run: textRun,
+	Run:     textRun,
 }
 
 func init() {

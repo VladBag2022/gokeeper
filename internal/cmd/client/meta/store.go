@@ -26,7 +26,7 @@ func init() {
 }
 
 var storeCmd = &cobra.Command{
-	Use: "store [-s <secret_id>] [-m <meta_id>] <string>",
+	Use:     "store [-s <secret_id>] [-m <meta_id>] <string>",
 	Example: "store -s 1 top secret",
 	Args: func(cmd *cobra.Command, args []string) error {
 		return cobra.MinimumNArgs(1)(cmd, args)
@@ -59,7 +59,7 @@ func storeRun(_ *cobra.Command, args []string) {
 	}
 
 	clientMeta, err := rpcClient.Keeper.StoreMeta(ctx, &pb.StoreMetaRequest{
-		Meta: meta,
+		Meta:     meta,
 		SecretId: secretID,
 	})
 	if err != nil {

@@ -9,16 +9,16 @@ import (
 
 func TestGenerateRandomBytes(t *testing.T) {
 	tests := []struct {
-		name    string
-		n int
+		name string
+		n    int
 	}{
 		{
 			name: "positive - zero-length",
-			n: 0,
+			n:    0,
 		},
 		{
 			name: "positive - 10 bytes",
-			n: 10,
+			n:    10,
 		},
 	}
 	for _, tt := range tests {

@@ -41,4 +41,3 @@ func getRun(_ *cobra.Command, _ []string) {
 		}
 	}
 }
-

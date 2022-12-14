@@ -7,7 +7,7 @@ import (
 )
 
 var base64Cmd = &cobra.Command{
-	Use: "base64 <base64_string>",
+	Use:     "base64 <base64_string>",
 	Example: "base64 SGVsbG8gV29ybGQhIC1uCg==",
 	Args: func(cmd *cobra.Command, args []string) error {
 		return cobra.ExactArgs(1)(cmd, args)

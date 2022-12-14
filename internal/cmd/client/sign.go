@@ -13,9 +13,9 @@ import (
 )
 
 var signCmd = &cobra.Command{
-	Use: "sign -u <username> -n",
+	Use:     "sign -u <username> -n",
 	Example: "sign -u username -n",
-	Run: signRun,
+	Run:     signRun,
 }
 
 func init() {
