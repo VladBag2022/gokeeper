@@ -8,17 +8,17 @@ import (
 
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
-	"github.com/VladBag2022/gokeeper/internal/storage"
+	"github.com/VladBag2022/gokeeper/internal/store"
 )
 
 type AuthServer struct {
 	pb.UnimplementedAuthServer
 
-	store      storage.Repository
+	store      store.Store
 	jwtManager *jwt.Manager
 }
 
-func NewAuthServer(store storage.Repository, jwtManager *jwt.Manager) *AuthServer {
+func NewAuthServer(store store.Store, jwtManager *jwt.Manager) *AuthServer {
 	return &AuthServer{store: store, jwtManager: jwtManager}
 }
 

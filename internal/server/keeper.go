@@ -9,16 +9,16 @@ import (
 	"google.golang.org/grpc/status"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
-	"github.com/VladBag2022/gokeeper/internal/storage"
+	"github.com/VladBag2022/gokeeper/internal/store"
 )
 
 type KeeperServer struct {
 	pb.UnimplementedKeeperServer
 
-	store storage.Repository
+	store store.Store
 }
 
-func NewKeeperServer(store storage.Repository) *KeeperServer {
+func NewKeeperServer(store store.Store) *KeeperServer {
 	return &KeeperServer{store: store}
 }
 

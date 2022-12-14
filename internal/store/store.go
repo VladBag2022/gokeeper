@@ -1,4 +1,4 @@
-package storage
+package store
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-type Repository interface {
+type Store interface {
 	IsUsernameAvailable(ctx context.Context, username string) (available bool, err error)
 	SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error)
 	SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error)

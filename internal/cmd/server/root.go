@@ -16,7 +16,7 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 	"github.com/VladBag2022/gokeeper/internal/server"
-	"github.com/VladBag2022/gokeeper/internal/storage"
+	"github.com/VladBag2022/gokeeper/internal/store"
 	"github.com/VladBag2022/gokeeper/internal/utils"
 )
 
@@ -43,7 +43,7 @@ func rootRun(_ *cobra.Command, _ []string) {
 
 	jwtManager := jwt.NewManager(jwtKey, viper.GetDuration("JWTDuration"))
 
-	store, err := storage.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
+	store, err := store.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
 	if err != nil {
 		log.Errorf("failed to connect to Postgres store: %s", err)
 		return
