@@ -13,6 +13,10 @@ import (
 
 func InitConfig(configFile *string) func() {
 	return func() {
+		if viper.GetBool("Verbose") {
+			log.SetLevel(log.DebugLevel)
+		}
+
 		if *configFile == "" {
 			*configFile = os.Getenv("CONFIG")
 		}

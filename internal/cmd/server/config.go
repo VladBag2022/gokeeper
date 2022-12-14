@@ -32,6 +32,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("key", "k", "", "TLS key file in PEM format")
 	rootCmd.PersistentFlags().DurationP("jwt", "j", 0, "JWT duration")
 	rootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
 
 	for key, f := range map[string]string{
 		"ListenAddress": "address",
@@ -39,6 +40,7 @@ func init() {
 		"CertPEM":       "cert",
 		"KeyPEM":        "key",
 		"JWTDuration":   "jwt",
+		"Verbose":       "verbose",
 	} {
 		if err := viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(f)); err != nil {
 			log.Errorf("failed to bind flag %s: %s", f, err)
@@ -51,6 +53,7 @@ func init() {
 		"CertPEMFile":   "CERT_PEM",
 		"KeyPEMFile":    "KEY_PEM",
 		"JWTDuration":   "JWT_DURATION",
+		"Verbose":       "VERBOSE",
 	} {
 		if err := viper.BindEnv(key, env); err != nil {
 			log.Errorf("failed to bind environment variable %s: %s", env, err)

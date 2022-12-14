@@ -27,10 +27,12 @@ func init() {
 	RootCmd.PersistentFlags().StringP("server", "r", "", "server address: host:port")
 	RootCmd.PersistentFlags().StringP("jwt", "j", "", "JWT")
 	RootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
+	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
 
 	for key, f := range map[string]string{
 		"ServerAddress": "server",
 		"JWT":           "jwt",
+		"Verbose":       "verbose",
 	} {
 		if err := viper.BindPFlag(key, RootCmd.PersistentFlags().Lookup(f)); err != nil {
 			log.Errorf("failed to bind flag %s. %s", f, err)
@@ -40,6 +42,7 @@ func init() {
 	for key, env := range map[string]string{
 		"ServerAddress": "SERVER_ADDRESS",
 		"JWT":           "JWT",
+		"Verbose":       "VERBOSE",
 	} {
 		if err := viper.BindEnv(key, env); err != nil {
 			log.Errorf("failed to bind environment variable %s. %s", env, err)
