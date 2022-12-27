@@ -13,11 +13,11 @@ import (
 	"google.golang.org/grpc"
 
 	common "github.com/VladBag2022/gokeeper/internal/cmd"
+	"github.com/VladBag2022/gokeeper/internal/crypt"
 	"github.com/VladBag2022/gokeeper/internal/jwt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 	"github.com/VladBag2022/gokeeper/internal/server"
 	"github.com/VladBag2022/gokeeper/internal/store"
-	"github.com/VladBag2022/gokeeper/internal/utils"
 )
 
 func Execute() {
@@ -35,7 +35,7 @@ func rootRun(_ *cobra.Command, _ []string) {
 		return
 	}
 
-	jwtKey, err := utils.GenerateRandomBytes(32)
+	jwtKey, err := crypt.GenerateRandomBytes(32)
 	if err != nil {
 		log.Errorf("failed to generate random JWT key: %s", err)
 		return

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/VladBag2022/gokeeper/internal/utils"
+	"github.com/VladBag2022/gokeeper/internal/crypt"
 )
 
 func TestManager_Generate(t *testing.T) {
@@ -22,7 +22,7 @@ func TestManager_Generate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k, err := utils.GenerateRandomBytes(10)
+			k, err := crypt.GenerateRandomBytes(10)
 			require.NoError(t, err)
 
 			m := &Manager{
