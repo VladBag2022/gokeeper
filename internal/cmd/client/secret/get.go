@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/VladBag2022/gokeeper/internal/cmd"
+	"github.com/VladBag2022/gokeeper/internal/crypt"
+	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 var getCmd = &cobra.Command{
@@ -28,14 +32,53 @@ func getRun(_ *cobra.Command, _ []string) {
 		return
 	}
 
+	var password string
+	prompt := &survey.Password{Message: "Decryption password"}
+	if err = survey.AskOne(prompt, &password); err != nil {
+		log.Errorf("failed to prompt decryption password: %s", err)
+		return
+	}
+
+	coder, err := crypt.NewCoder([]byte(password))
+	if err != nil {
+		log.Errorf("failed to create coder: %s", err)
+		return
+	}
+
 	secrets, err := rpcClient.Keeper.GetSecrets(ctx, &empty.Empty{})
 	if err != nil {
 		log.Errorf("failed to get secrets: %s", err)
 		return
 	}
 
-	for _, secret := range secrets.GetSecrets() {
-		fmt.Printf("[%d] %s\n", secret.GetId(), secret.GetSecret().GetData())
+	fs: for _, secret := range secrets.GetSecrets() {
+		data, dErr := coder.Decrypt(secret.GetSecret().GetData())
+		if dErr != nil {
+			log.Errorf("failed to decrypt secret data: %s", dErr)
+			continue
+		}
+
+		var text string
+		switch secret.GetSecret().GetKind() {
+		case pb.SecretKind_SECRET_CREDENTIALS:
+			credentials := &pb.Credentials{}
+			if uErr := proto.Unmarshal(data, credentials); uErr != nil {
+				log.Errorf("failed to unmarshal credentials: %s", uErr)
+				continue fs
+			}
+			text = credentials.String()
+		case pb.SecretKind_SECRET_TEXT, pb.SecretKind_SECRET_BLOB:
+			text = string(data)
+		case pb.SecretKind_SECRET_CREDIT_CARD:
+			card := &pb.CreditCard{}
+			if uErr := proto.Unmarshal(data, card); uErr != nil {
+				log.Errorf("failed to unmarshal credit card: %s", uErr)
+				continue fs
+			}
+			text = card.String()
+		}
+
+		fmt.Printf("[%d] %s\n", secret.GetId(), text)
 		for _, meta := range secret.GetMeta() {
 			fmt.Printf("* [%d] %s\n", meta.GetId(), meta.GetMeta().GetText())
 		}
