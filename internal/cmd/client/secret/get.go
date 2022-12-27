@@ -51,7 +51,8 @@ func getRun(_ *cobra.Command, _ []string) {
 		return
 	}
 
-	fs: for _, secret := range secrets.GetSecrets() {
+fs:
+	for _, secret := range secrets.GetSecrets() {
 		data, dErr := coder.Decrypt(secret.GetSecret().GetData())
 		if dErr != nil {
 			log.Errorf("failed to decrypt secret data: %s", dErr)

@@ -22,6 +22,6 @@ func init() {
 func base64Run(_ *cobra.Command, args []string) {
 	storeSecret(&pb.Secret{
 		Data: []byte(args[0]),
-		Kind: pb.SecretKind_SECRET_TEXT,
+		Kind: pb.SecretKind_SECRET_BLOB,
 	})
 }
