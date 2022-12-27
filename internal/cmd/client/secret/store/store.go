@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/AlecAivazis/survey/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/VladBag2022/gokeeper/internal/cmd"
+	"github.com/VladBag2022/gokeeper/internal/crypt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -31,6 +33,20 @@ func storeSecret(secret *pb.Secret) {
 	if err != nil {
 		return
 	}
+
+	var password string
+	prompt := &survey.Password{Message: "Encryption password"}
+	if err = survey.AskOne(prompt, &password); err != nil {
+		log.Errorf("failed to prompt encryption password: %s", err)
+		return
+	}
+
+	coder, err := crypt.NewCoder([]byte(password))
+	if err != nil {
+		log.Errorf("failed to create coder: %s", err)
+		return
+	}
+	secret.Data = coder.Encrypt(secret.GetData())
 
 	secretID := viper.GetInt64("id")
 	if secretID > 0 {
