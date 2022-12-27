@@ -45,7 +45,7 @@ func TestKeeperServer_permitSecretID(t *testing.T) {
 			userID, err := strconv.ParseInt(tt.ctxUserID, 10, 64)
 			require.NoError(t, err)
 
-			s := mocks.NewStore(t)
+			s := mocks.NewGRPCStore(t)
 			s.On("IsUserSecret", mock.Anything, userID, tt.secretID).Return(tt.isUserSecret, nil)
 
 			ks := &KeeperServer{store: s}
@@ -89,7 +89,7 @@ func TestKeeperServer_permitMetaID(t *testing.T) {
 			userID, err := strconv.ParseInt(tt.ctxUserID, 10, 64)
 			require.NoError(t, err)
 
-			s := mocks.NewStore(t)
+			s := mocks.NewGRPCStore(t)
 			s.On("IsUserMeta", mock.Anything, userID, tt.metaID).Return(tt.isUserMeta, nil)
 
 			ks := &KeeperServer{store: s}

@@ -44,7 +44,7 @@ func TestAuthServer_SignIn(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := mocks.NewStore(t)
+			s := mocks.NewGRPCStore(t)
 			if tt.authorized {
 				s.On("SignIn", mock.Anything, tt.req).Return(int64(0), nil)
 			} else {
@@ -91,7 +91,7 @@ func TestAuthServer_SignUp(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := mocks.NewStore(t)
+			s := mocks.NewGRPCStore(t)
 			s.On("IsUsernameAvailable", mock.Anything, tt.req.GetUsername()).Return(tt.available, nil)
 			if tt.available {
 				s.On("SignUp", mock.Anything, tt.req).Return(int64(0), nil)

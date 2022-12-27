@@ -28,7 +28,7 @@ func init() {
 var storeCmd = &cobra.Command{
 	Use:     "store [-x <secret_id>] [-m <meta_id>] <string>",
 	Example: "store -s 1 top secret",
-	Run: storeRun,
+	Run:     storeRun,
 }
 
 func storeRun(_ *cobra.Command, args []string) {

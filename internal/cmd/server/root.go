@@ -43,13 +43,13 @@ func rootRun(_ *cobra.Command, _ []string) {
 
 	jwtManager := jwt.NewManager(jwtKey, viper.GetDuration("JWTDuration"))
 
-	store, err := store.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
+	postgresStore, err := store.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
 	if err != nil {
 		log.Errorf("failed to connect to Postgres store: %s", err)
 		return
 	}
 	defer func() {
-		if err = store.Close(); err != nil {
+		if err = postgresStore.Close(); err != nil {
 			log.Errorf("failed to close store: %s", err)
 		}
 	}()
@@ -59,8 +59,10 @@ func rootRun(_ *cobra.Command, _ []string) {
 		grpc.UnaryInterceptor(authInterceptor.Unary()),
 	)
 
-	authServer := server.NewAuthServer(store, jwtManager)
-	keeperServer := server.NewKeeperServer(store)
+	grpcAdapter := store.NewGRPCAdapter(postgresStore)
+
+	authServer := server.NewAuthServer(grpcAdapter, jwtManager)
+	keeperServer := server.NewKeeperServer(grpcAdapter)
 
 	pb.RegisterAuthServer(grpcServer, authServer)
 	pb.RegisterKeeperServer(grpcServer, keeperServer)

@@ -14,11 +14,11 @@ import (
 type AuthServer struct {
 	pb.UnimplementedAuthServer
 
-	store      store.Store
+	store      store.GRPCStore
 	jwtManager *jwt.Manager
 }
 
-func NewAuthServer(store store.Store, jwtManager *jwt.Manager) *AuthServer {
+func NewAuthServer(store store.GRPCStore, jwtManager *jwt.Manager) *AuthServer {
 	return &AuthServer{store: store, jwtManager: jwtManager}
 }
 

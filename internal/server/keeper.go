@@ -15,10 +15,10 @@ import (
 type KeeperServer struct {
 	pb.UnimplementedKeeperServer
 
-	store store.Store
+	store store.GRPCStore
 }
 
-func NewKeeperServer(store store.Store) *KeeperServer {
+func NewKeeperServer(store store.GRPCStore) *KeeperServer {
 	return &KeeperServer{store: store}
 }
 

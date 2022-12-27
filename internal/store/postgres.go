@@ -6,8 +6,6 @@ import (
 	"github.com/georgysavva/scany/sqlscan"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
-
-	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 type PostgresStore struct {
@@ -78,27 +76,27 @@ func (p *PostgresStore) IsUsernameAvailable(
 	return count == 0, err
 }
 
-func (p *PostgresStore) SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
+func (p *PostgresStore) SignIn(ctx context.Context, credentials Credentials) (id int64, err error) {
 	err = sqlscan.Get(ctx, p.database, &id,
 		"SELECT id FROM users WHERE username = $1 AND password = crypt($2, password)",
-		credentials.GetUsername(), credentials.GetPassword())
+		credentials.Username, credentials.Password)
 	return
 }
 
-func (p *PostgresStore) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
+func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (id int64, err error) {
 	return id, p.database.GetContext(ctx, &id,
 		"INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt('bf'))) RETURNING id",
-		credentials.GetUsername(), credentials.GetPassword())
+		credentials.Username, credentials.Password)
 }
 
-func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
+func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret Secret) (id int64, err error) {
 	return id, p.database.GetContext(ctx, &id,
 		"INSERT INTO secrets (user_id, data, kind) VALUES ($1, $2, $3) RETURNING id",
-		userID, secret.GetData(), secret.GetKind())
+		userID, secret.Data, secret.Kind)
 }
 
-func (p *PostgresStore) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
-	_, err := p.database.ExecContext(ctx, "UPDATE secrets SET data = $1 WHERE id = $2", secret.GetData(), id)
+func (p *PostgresStore) UpdateSecret(ctx context.Context, id int64, secret Secret) error {
+	_, err := p.database.ExecContext(ctx, "UPDATE secrets SET data = $1 WHERE id = $2", secret.Data, id)
 	return err
 }
 
@@ -107,14 +105,14 @@ func (p *PostgresStore) DeleteSecret(ctx context.Context, id int64) error {
 	return err
 }
 
-func (p *PostgresStore) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error) {
+func (p *PostgresStore) StoreMeta(ctx context.Context, secretID int64, meta Meta) (id int64, err error) {
 	return id, p.database.GetContext(ctx, &id,
 		"INSERT INTO meta (secret_id, text) VALUES ($1, $2) RETURNING id",
-		secretID, meta.GetText())
+		secretID, meta)
 }
 
-func (p *PostgresStore) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
-	_, err := p.database.ExecContext(ctx, "UPDATE meta SET text = $1 WHERE id = $2", meta.GetText(), id)
+func (p *PostgresStore) UpdateMeta(ctx context.Context, id int64, meta Meta) error {
+	_, err := p.database.ExecContext(ctx, "UPDATE meta SET text = $1 WHERE id = $2", meta, id)
 	return err
 }
 
@@ -123,9 +121,7 @@ func (p *PostgresStore) DeleteMeta(ctx context.Context, id int64) error {
 	return err
 }
 
-func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error) {
-	secrets = &pb.ClientSecrets{}
-
+func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets []ClientSecret, err error) {
 	rows, err := p.database.QueryContext(ctx, "SELECT id, data, kind FROM secrets WHERE user_id = $1", userID)
 	if err != nil {
 		return nil, err
@@ -133,18 +129,18 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets *
 	defer rows.Close()
 
 	for rows.Next() {
-		s := &pb.ClientSecret{Secret: &pb.Secret{}}
-		err = rows.Scan(&s.Id, &s.Secret.Data, &s.Secret.Kind)
+		var s ClientSecret
+		err = rows.Scan(&s.ID, &s.Secret.Data, &s.Secret.Kind)
 		if err != nil {
 			return nil, err
 		}
 
-		s.Meta, err = p.getClientMeta(ctx, s.GetId())
+		s.Meta, err = p.getClientMeta(ctx, s.ID)
 		if err != nil {
 			return nil, err
 		}
 
-		secrets.Secrets = append(secrets.Secrets, s)
+		secrets = append(secrets, s)
 	}
 
 	err = rows.Err()
@@ -179,18 +175,18 @@ func (p *PostgresStore) IsUserMeta(ctx context.Context, userID, metaID int64) (b
 	return count > 0, err
 }
 
-func (p *PostgresStore) getClientMeta(ctx context.Context, secretID int64) (meta []*pb.ClientMeta, err error) {
+func (p *PostgresStore) getClientMeta(ctx context.Context, secretID int64) (meta []ClientMeta, err error) {
 	rows, err := p.database.QueryContext(ctx, "SELECT id, text FROM meta WHERE secret_id = $1", secretID)
 	if err != nil {
-		return nil, err
+		return meta, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		m := &pb.ClientMeta{Meta: &pb.Meta{}}
-		err = rows.Scan(&m.Id, &m.Meta.Text)
+		var m ClientMeta
+		err = rows.Scan(&m.ID, &m.Meta)
 		if err != nil {
-			return nil, err
+			return meta, err
 		}
 		meta = append(meta, m)
 	}
