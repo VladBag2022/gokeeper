@@ -1,9 +1,12 @@
 package store
 
 import (
+	"strconv"
 	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"google.golang.org/protobuf/proto"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
@@ -22,16 +25,38 @@ func init() {
 }
 
 func creditCardRun(_ *cobra.Command, args []string) {
-	number := args[0]
-	month := args[1]
-	year := args[2]
-	cvv := args[3]
-	name := strings.Join(args[4:], " ")
+	month, err := strconv.ParseInt(args[1], 10, 32)
+	if err != nil {
+		log.Errorf("failed to parse month: %s", err)
+		return
+	}
 
-	text := strings.Join([]string{number, month, year, cvv, name}, "")
+	year, err := strconv.ParseInt(args[2], 10, 32)
+	if err != nil {
+		log.Errorf("failed to parse year: %s", err)
+		return
+	}
+
+	cvv, err := strconv.ParseInt(args[3], 10, 32)
+	if err != nil {
+		log.Errorf("failed to parse CVV: %s", err)
+		return
+	}
+
+	data, err := proto.Marshal(&pb.CreditCard{
+		Number: args[0],
+		Month:  int32(month),
+		Year:   int32(year),
+		Cvv:    int32(cvv),
+		Owner:  strings.Join(args[4:], " "),
+	})
+	if err != nil {
+		log.Errorf("failed to marshal credit card: %s", err)
+		return
+	}
 
 	storeSecret(&pb.Secret{
-		Data: []byte(text),
+		Data: data,
 		Kind: pb.SecretKind_SECRET_TEXT,
 	})
 }

@@ -1,9 +1,9 @@
 package store
 
 import (
-	"strings"
-
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"google.golang.org/protobuf/proto"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
@@ -22,13 +22,17 @@ func init() {
 }
 
 func credentialsRun(_ *cobra.Command, args []string) {
-	username := args[0]
-	password := args[1]
-
-	text := strings.Join([]string{username, password}, "")
+	data, err := proto.Marshal(&pb.Credentials{
+		Username: args[0],
+		Password: args[1],
+	})
+	if err != nil {
+		log.Errorf("failed to marshal credentials: %s", err)
+		return
+	}
 
 	storeSecret(&pb.Secret{
-		Data: []byte(text),
+		Data: data,
 		Kind: pb.SecretKind_SECRET_TEXT,
 	})
 }
