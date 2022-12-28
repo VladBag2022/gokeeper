@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
-	"github.com/VladBag2022/gokeeper/internal/crypt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -28,17 +28,20 @@ func init() {
 func storeSecret(secret *pb.Secret) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient(true)
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}
 
-	coder, err := crypt.NewCoder(rpcClient.SessionKey)
+	sessionManager, err := client.NewSessionManagerFromEncryptedKey(
+		viper.GetString("EncryptedKey"),
+		viper.GetString("SessionKey"))
 	if err != nil {
-		log.Errorf("failed to create coder: %s", err)
+		log.Errorf("failed to create session manager: %s", err)
 		return
 	}
-	secret.Data = coder.Encrypt(secret.GetData())
+
+	secret.Data = sessionManager.Coder.Encrypt(secret.GetData())
 
 	secretID := viper.GetInt64("id")
 	if secretID > 0 {

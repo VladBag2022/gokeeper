@@ -9,10 +9,8 @@ import (
 type Client struct {
 	Auth   pb.AuthClient
 	Keeper pb.KeeperClient
-
-	SessionKey []byte
 }
 
-func NewClient(cc *grpc.ClientConn, sessionKey []byte) *Client {
-	return &Client{pb.NewAuthClient(cc), pb.NewKeeperClient(cc), sessionKey}
+func NewClient(cc *grpc.ClientConn) *Client {
+	return &Client{pb.NewAuthClient(cc), pb.NewKeeperClient(cc)}
 }

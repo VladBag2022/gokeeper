@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
@@ -35,7 +36,7 @@ func init() {
 func signRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient(false)
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
 		return
 	}
@@ -47,6 +48,12 @@ func signRun(_ *cobra.Command, _ []string) {
 	prompt := &survey.Password{Message: "Password"}
 	if err = survey.AskOne(prompt, &credentials.Password); err != nil {
 		log.Errorf("failed to prompt password: %s", err)
+		return
+	}
+
+	sessionManager, err := client.NewSessionManagerFromPassword(credentials.GetPassword())
+	if err != nil {
+		log.Errorf("failed to create session manager: %s", err)
 		return
 	}
 
@@ -67,4 +74,10 @@ func signRun(_ *cobra.Command, _ []string) {
 
 	viper.Set("JWT", jwt.GetToken())
 	fmt.Printf("JWT acquired: %s\n", jwt.GetToken())
+
+	viper.Set("SessionKey", sessionManager.GetSessionKey())
+	fmt.Printf("Session key: %s\n", sessionManager.GetSessionKey())
+
+	viper.Set("EncryptedKey", sessionManager.GetEncryptedKey())
+	fmt.Printf("Encrypted key: %s\n", sessionManager.GetEncryptedKey())
 }

@@ -26,12 +26,14 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
 	RootCmd.PersistentFlags().StringP("server", "r", "", "server address: host:port")
 	RootCmd.PersistentFlags().StringP("jwt", "j", "", "JWT")
+	RootCmd.PersistentFlags().StringP("session-key", "k", "", "session key")
 	RootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
 
 	for key, f := range map[string]string{
 		"ServerAddress": "server",
 		"JWT":           "jwt",
+		"SessionKey":    "session-key",
 		"Verbose":       "verbose",
 	} {
 		if err := viper.BindPFlag(key, RootCmd.PersistentFlags().Lookup(f)); err != nil {
@@ -42,6 +44,7 @@ func init() {
 	for key, env := range map[string]string{
 		"ServerAddress": "SERVER_ADDRESS",
 		"JWT":           "JWT",
+		"SessionKey":    "SESSION_KEY",
 		"Verbose":       "VERBOSE",
 	} {
 		if err := viper.BindEnv(key, env); err != nil {

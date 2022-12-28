@@ -7,10 +7,11 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
-	"github.com/VladBag2022/gokeeper/internal/crypt"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -26,14 +27,16 @@ func init() {
 func getRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient(true)
+	sessionManager, err := client.NewSessionManagerFromEncryptedKey(
+		viper.GetString("EncryptedKey"),
+		viper.GetString("SessionKey"))
 	if err != nil {
+		log.Errorf("failed to create session manager: %s", err)
 		return
 	}
 
-	coder, err := crypt.NewCoder(rpcClient.SessionKey)
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
-		log.Errorf("failed to create coder: %s", err)
 		return
 	}
 
@@ -45,7 +48,7 @@ func getRun(_ *cobra.Command, _ []string) {
 
 fs:
 	for _, secret := range secrets.GetSecrets() {
-		data, dErr := coder.Decrypt(secret.GetSecret().GetData())
+		data, dErr := sessionManager.Coder.Decrypt(secret.GetSecret().GetData())
 		if dErr != nil {
 			log.Errorf("failed to decrypt secret data: %s", dErr)
 			continue
