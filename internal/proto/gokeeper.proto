@@ -41,6 +41,7 @@ enum SecretKind {
   SECRET_TEXT = 2;
   SECRET_BLOB = 3;
   SECRET_CREDIT_CARD = 4;
+  SECRET_ENCRYPTED_KEY = 5;
 }
 
 message Secret {
@@ -82,4 +83,6 @@ service Keeper {
   rpc DeleteMeta(ClientMeta) returns (google.protobuf.Empty);
 
   rpc GetSecrets(google.protobuf.Empty) returns (ClientSecrets);
+  
+  rpc GetEncryptedKey(google.protobuf.Empty) returns (ClientSecret);
 }

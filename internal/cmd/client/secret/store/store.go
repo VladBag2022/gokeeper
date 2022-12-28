@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
-	pb "github.com/VladBag2022/gokeeper/internal/proto"
+	"github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 var Cmd = &cobra.Command{
@@ -25,7 +26,7 @@ func init() {
 	}
 }
 
-func storeSecret(secret *pb.Secret) {
+func Secret(secret *proto.Secret) {
 	ctx := context.Background()
 
 	rpcClient, err := cmd.NewGRPCClient()
@@ -33,19 +34,27 @@ func storeSecret(secret *pb.Secret) {
 		return
 	}
 
-	sessionManager, err := client.NewSessionManagerFromEncryptedKey(
-		viper.GetString("EncryptedKey"),
-		viper.GetString("SessionKey"))
-	if err != nil {
-		log.Errorf("failed to create session manager: %s", err)
-		return
-	}
+	if secret.GetKind() != proto.SecretKind_SECRET_ENCRYPTED_KEY {
+		key, gErr := rpcClient.Keeper.GetEncryptedKey(ctx, &empty.Empty{})
+		if gErr != nil {
+			log.Errorf("failed to get encrypted key: %s", gErr)
+			return
+		}
 
-	secret.Data = sessionManager.Coder.Encrypt(secret.GetData())
+		sessionManager, sErr := client.NewSessionManagerFromEncryptedKey(
+			string(key.GetSecret().GetData()),
+			viper.GetString("SessionKey"))
+		if sErr != nil {
+			log.Errorf("failed to create session manager: %s", sErr)
+			return
+		}
+
+		secret.Data = sessionManager.Coder.Encrypt(secret.GetData())
+	}
 
 	secretID := viper.GetInt64("id")
 	if secretID > 0 {
-		_, err = rpcClient.Keeper.UpdateSecret(ctx, &pb.ClientSecret{
+		_, err = rpcClient.Keeper.UpdateSecret(ctx, &proto.ClientSecret{
 			Secret: secret,
 			Id:     secretID,
 		})

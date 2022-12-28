@@ -27,16 +27,22 @@ func init() {
 func getRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	sessionManager, err := client.NewSessionManagerFromEncryptedKey(
-		viper.GetString("EncryptedKey"),
-		viper.GetString("SessionKey"))
+	rpcClient, err := cmd.NewGRPCClient()
 	if err != nil {
-		log.Errorf("failed to create session manager: %s", err)
 		return
 	}
 
-	rpcClient, err := cmd.NewGRPCClient()
+	key, err := rpcClient.Keeper.GetEncryptedKey(ctx, &empty.Empty{})
 	if err != nil {
+		log.Errorf("failed to get encrypted key: %s", err)
+		return
+	}
+
+	sessionManager, err := client.NewSessionManagerFromEncryptedKey(
+		string(key.GetSecret().GetData()),
+		viper.GetString("SessionKey"))
+	if err != nil {
+		log.Errorf("failed to create session manager: %s", err)
 		return
 	}
 

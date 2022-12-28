@@ -42,6 +42,27 @@ func (_m *Store) DeleteSecret(ctx context.Context, id int64) error {
 	return r0
 }
 
+// GetEncryptedKey provides a mock function with given fields: ctx, userID
+func (_m *Store) GetEncryptedKey(ctx context.Context, userID int64) (store.ClientSecret, error) {
+	ret := _m.Called(ctx, userID)
+
+	var r0 store.ClientSecret
+	if rf, ok := ret.Get(0).(func(context.Context, int64) store.ClientSecret); ok {
+		r0 = rf(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(store.ClientSecret)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetSecrets provides a mock function with given fields: ctx, userID
 func (_m *Store) GetSecrets(ctx context.Context, userID int64) ([]store.ClientSecret, error) {
 	ret := _m.Called(ctx, userID)

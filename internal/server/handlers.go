@@ -69,3 +69,11 @@ func (s *KeeperServer) GetSecrets(ctx context.Context, _ *empty.Empty) (*pb.Clie
 	}
 	return s.store.GetSecrets(ctx, userID)
 }
+
+func (s *KeeperServer) GetEncryptedKey(ctx context.Context, _ *empty.Empty) (*pb.ClientSecret, error) {
+	userID, err := userIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return s.store.GetEncryptedKey(ctx, userID)
+}

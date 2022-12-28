@@ -55,7 +55,7 @@ func creditCardRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	storeSecret(&pb.Secret{
+	Secret(&pb.Secret{
 		Data: data,
 		Kind: pb.SecretKind_SECRET_CREDIT_CARD,
 	})

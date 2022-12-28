@@ -152,6 +152,7 @@ type KeeperClient interface {
 	UpdateMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error)
 	DeleteMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetSecrets(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecrets, error)
+	GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecret, error)
 }
 
 type keeperClient struct {
@@ -225,6 +226,15 @@ func (c *keeperClient) GetSecrets(ctx context.Context, in *empty.Empty, opts ...
 	return out, nil
 }
 
+func (c *keeperClient) GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecret, error) {
+	out := new(ClientSecret)
+	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/GetEncryptedKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // KeeperServer is the server API for Keeper service.
 // All implementations must embed UnimplementedKeeperServer
 // for forward compatibility
@@ -236,6 +246,7 @@ type KeeperServer interface {
 	UpdateMeta(context.Context, *ClientMeta) (*empty.Empty, error)
 	DeleteMeta(context.Context, *ClientMeta) (*empty.Empty, error)
 	GetSecrets(context.Context, *empty.Empty) (*ClientSecrets, error)
+	GetEncryptedKey(context.Context, *empty.Empty) (*ClientSecret, error)
 	mustEmbedUnimplementedKeeperServer()
 }
 
@@ -263,6 +274,9 @@ func (UnimplementedKeeperServer) DeleteMeta(context.Context, *ClientMeta) (*empt
 }
 func (UnimplementedKeeperServer) GetSecrets(context.Context, *empty.Empty) (*ClientSecrets, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSecrets not implemented")
+}
+func (UnimplementedKeeperServer) GetEncryptedKey(context.Context, *empty.Empty) (*ClientSecret, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEncryptedKey not implemented")
 }
 func (UnimplementedKeeperServer) mustEmbedUnimplementedKeeperServer() {}
 
@@ -403,6 +417,24 @@ func _Keeper_GetSecrets_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Keeper_GetEncryptedKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KeeperServer).GetEncryptedKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gokeeper.Keeper/GetEncryptedKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KeeperServer).GetEncryptedKey(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Keeper_ServiceDesc is the grpc.ServiceDesc for Keeper service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -437,6 +469,10 @@ var Keeper_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSecrets",
 			Handler:    _Keeper_GetSecrets_Handler,
+		},
+		{
+			MethodName: "GetEncryptedKey",
+			Handler:    _Keeper_GetEncryptedKey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

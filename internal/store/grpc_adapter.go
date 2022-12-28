@@ -64,6 +64,18 @@ func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb
 	return secrets, err
 }
 
+func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.ClientSecret, err error) {
+	secret = &pb.ClientSecret{}
+
+	k, err := a.store.GetEncryptedKey(ctx, userID)
+	if err != nil {
+		return secret, err
+	}
+
+	secret = toClientSecretGRPC(k)
+	return secret, err
+}
+
 func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error) {
 	return a.store.IsUserSecret(ctx, userID, secretID)
 }

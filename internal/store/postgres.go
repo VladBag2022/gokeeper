@@ -6,6 +6,8 @@ import (
 	"github.com/georgysavva/scany/sqlscan"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
+
+	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 type PostgresStore struct {
@@ -77,10 +79,9 @@ func (p *PostgresStore) IsUsernameAvailable(
 }
 
 func (p *PostgresStore) SignIn(ctx context.Context, credentials Credentials) (id int64, err error) {
-	err = sqlscan.Get(ctx, p.database, &id,
+	return id, sqlscan.Get(ctx, p.database, &id,
 		"SELECT id FROM users WHERE username = $1 AND password = crypt($2, password)",
 		credentials.Username, credentials.Password)
-	return
 }
 
 func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (id int64, err error) {
@@ -90,9 +91,19 @@ func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (id
 }
 
 func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret Secret) (id int64, err error) {
-	return id, p.database.GetContext(ctx, &id,
+	err = p.database.GetContext(ctx, &id,
 		"INSERT INTO secrets (user_id, data, kind) VALUES ($1, $2, $3) RETURNING id",
 		userID, secret.Data, secret.Kind)
+	if err != nil {
+		return
+	}
+
+	if secret.Kind == SecretKind(pb.SecretKind_SECRET_ENCRYPTED_KEY) {
+		_, err = p.database.ExecContext(ctx,
+			"DELETE FROM secrets WHERE user_id = $1 AND kind = $2 AND id != $3",
+			userID, pb.SecretKind_SECRET_ENCRYPTED_KEY, id)
+	}
+	return
 }
 
 func (p *PostgresStore) UpdateSecret(ctx context.Context, id int64, secret Secret) error {
@@ -122,7 +133,9 @@ func (p *PostgresStore) DeleteMeta(ctx context.Context, id int64) error {
 }
 
 func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets []ClientSecret, err error) {
-	rows, err := p.database.QueryContext(ctx, "SELECT id, data, kind FROM secrets WHERE user_id = $1", userID)
+	rows, err := p.database.QueryContext(ctx,
+		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind != $2",
+		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +161,13 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets [
 		return nil, err
 	}
 	return secrets, nil
+}
+
+func (p *PostgresStore) GetEncryptedKey(ctx context.Context, userID int64) (secret ClientSecret, err error) {
+	row := p.database.QueryRowContext(ctx,
+		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind = $2 LIMIT 1",
+		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
+	return secret, row.Scan(&secret.ID, &secret.Secret.Data, &secret.Secret.Kind)
 }
 
 func (p *PostgresStore) IsUserSecret(ctx context.Context, userID, secretID int64) (bool, error) {

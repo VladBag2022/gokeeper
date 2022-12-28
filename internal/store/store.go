@@ -43,6 +43,7 @@ type Store interface {
 	DeleteMeta(ctx context.Context, id int64) error
 
 	GetSecrets(ctx context.Context, userID int64) (secrets []ClientSecret, err error)
+	GetEncryptedKey(ctx context.Context, userID int64) (secret ClientSecret, err error)
 
 	IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error)
 	IsUserMeta(ctx context.Context, userID, metaID int64) (userMeta bool, err error)

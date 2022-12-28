@@ -20,7 +20,7 @@ func init() {
 
 func textRun(_ *cobra.Command, args []string) {
 	text := strings.Join(args, " ")
-	storeSecret(&pb.Secret{
+	Secret(&pb.Secret{
 		Data: []byte(text),
 		Kind: pb.SecretKind_SECRET_TEXT,
 	})

@@ -11,6 +11,7 @@ import (
 
 	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
+	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret/store"
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
@@ -78,6 +79,8 @@ func signRun(_ *cobra.Command, _ []string) {
 	viper.Set("SessionKey", sessionManager.GetSessionKey())
 	fmt.Printf("Session key: %s\n", sessionManager.GetSessionKey())
 
-	viper.Set("EncryptedKey", sessionManager.GetEncryptedKey())
-	fmt.Printf("Encrypted key: %s\n", sessionManager.GetEncryptedKey())
+	store.Secret(&pb.Secret{
+		Data: []byte(sessionManager.GetEncryptedKey()),
+		Kind: pb.SecretKind_SECRET_ENCRYPTED_KEY,
+	})
 }
