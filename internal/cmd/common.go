@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"encoding/hex"
+	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -43,7 +45,19 @@ func SaveConfigOnDemand(saveConfig bool, configFile, defaultConfigFile string) {
 	}
 }
 
-func NewGRPCClient() (*client.Client, error) {
+func NewGRPCClient(loadSessionKey bool) (*client.Client, error) {
+	var key []byte
+
+	if loadSessionKey {
+		var err error
+		key, err = hex.DecodeString(viper.GetString("SessionKey"))
+		fmt.Println(string(key))
+		if err != nil {
+			log.Errorf("failed to decode session key: %s", err)
+			return nil, err
+		}
+	}
+
 	authInterceptor := client.NewAuthInterceptor(viper.GetString("JWT"))
 
 	cc, err := grpc.Dial(viper.GetString("ServerAddress"),
@@ -54,5 +68,5 @@ func NewGRPCClient() (*client.Client, error) {
 		return nil, err
 	}
 
-	return client.NewClient(cc), nil
+	return client.NewClient(cc, key), nil
 }

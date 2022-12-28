@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,19 +28,12 @@ func init() {
 func storeSecret(secret *pb.Secret) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient()
+	rpcClient, err := cmd.NewGRPCClient(true)
 	if err != nil {
 		return
 	}
 
-	var password string
-	prompt := &survey.Password{Message: "Encryption password"}
-	if err = survey.AskOne(prompt, &password); err != nil {
-		log.Errorf("failed to prompt encryption password: %s", err)
-		return
-	}
-
-	coder, err := crypt.NewCoder([]byte(password))
+	coder, err := crypt.NewCoder(rpcClient.SessionKey)
 	if err != nil {
 		log.Errorf("failed to create coder: %s", err)
 		return

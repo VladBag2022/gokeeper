@@ -37,7 +37,7 @@ func storeRun(_ *cobra.Command, args []string) {
 	text := strings.Join(args, " ")
 	meta := &pb.Meta{Text: text}
 
-	rpcClient, err := cmd.NewGRPCClient()
+	rpcClient, err := cmd.NewGRPCClient(false)
 	if err != nil {
 		return
 	}

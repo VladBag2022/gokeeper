@@ -35,7 +35,7 @@ func init() {
 func signRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient()
+	rpcClient, err := cmd.NewGRPCClient(false)
 	if err != nil {
 		return
 	}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/golang/protobuf/ptypes/empty"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -27,19 +26,12 @@ func init() {
 func getRun(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
-	rpcClient, err := cmd.NewGRPCClient()
+	rpcClient, err := cmd.NewGRPCClient(true)
 	if err != nil {
 		return
 	}
 
-	var password string
-	prompt := &survey.Password{Message: "Decryption password"}
-	if err = survey.AskOne(prompt, &password); err != nil {
-		log.Errorf("failed to prompt decryption password: %s", err)
-		return
-	}
-
-	coder, err := crypt.NewCoder([]byte(password))
+	coder, err := crypt.NewCoder(rpcClient.SessionKey)
 	if err != nil {
 		log.Errorf("failed to create coder: %s", err)
 		return

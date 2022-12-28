@@ -39,7 +39,7 @@ func deleteRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	rpcClient, err := cmd.NewGRPCClient()
+	rpcClient, err := cmd.NewGRPCClient(false)
 	if err != nil {
 		return
 	}
