@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	RootCmd = &cobra.Command{
+	rootCmd = &cobra.Command{
 		Use:     "gokeeper -s <host>:<port>",
 		Example: "gokeeper -s 127.0.0.1:8080",
 	}
@@ -23,12 +23,12 @@ var (
 func init() {
 	cobra.OnInitialize(common.InitConfig(&configFile))
 
-	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
-	RootCmd.PersistentFlags().StringP("server", "r", "", "server address: host:port")
-	RootCmd.PersistentFlags().StringP("jwt", "j", "", "JWT")
-	RootCmd.PersistentFlags().StringP("session-key", "k", "", "session key")
-	RootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
-	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file")
+	rootCmd.PersistentFlags().StringP("server", "r", "", "server address: host:port")
+	rootCmd.PersistentFlags().StringP("jwt", "j", "", "JWT")
+	rootCmd.PersistentFlags().StringP("session-key", "k", "", "session key")
+	rootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
 
 	for key, f := range map[string]string{
 		"ServerAddress": "server",
@@ -36,7 +36,7 @@ func init() {
 		"SessionKey":    "session-key",
 		"Verbose":       "verbose",
 	} {
-		if err := viper.BindPFlag(key, RootCmd.PersistentFlags().Lookup(f)); err != nil {
+		if err := viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(f)); err != nil {
 			log.Errorf("failed to bind flag %s. %s", f, err)
 		}
 	}
@@ -52,9 +52,9 @@ func init() {
 		}
 	}
 
-	if err := RootCmd.MarkPersistentFlagRequired("server"); err != nil {
+	if err := rootCmd.MarkPersistentFlagRequired("server"); err != nil {
 		log.Errorf("failed to mark server flag as required: %s", err)
 	}
 
-	RootCmd.AddCommand(signCmd, secret.Cmd, meta.Cmd)
+	rootCmd.AddCommand(signCmd, secret.Cmd, meta.Cmd)
 }

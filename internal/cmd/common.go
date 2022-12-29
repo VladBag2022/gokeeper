@@ -1,3 +1,4 @@
+// Package cmd contains GoKeeper CLI for both client and server.
 package cmd
 
 import (
@@ -11,6 +12,7 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/client"
 )
 
+// InitConfig returns function for config initialisation which loads config from file in case it was provided.
 func InitConfig(configFile *string) func() {
 	return func() {
 		if viper.GetBool("Verbose") {
@@ -32,6 +34,7 @@ func InitConfig(configFile *string) func() {
 	}
 }
 
+// SaveConfigOnDemand is a helper function for saving configuration to file.
 func SaveConfigOnDemand(saveConfig bool, configFile, defaultConfigFile string) {
 	if saveConfig {
 		if len(configFile) == 0 {
@@ -43,6 +46,7 @@ func SaveConfigOnDemand(saveConfig bool, configFile, defaultConfigFile string) {
 	}
 }
 
+// NewGRPCClient creates new Client using viper config.
 func NewGRPCClient() (*client.Client, error) {
 	authInterceptor := client.NewAuthInterceptor(viper.GetString("JWT"))
 

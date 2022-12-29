@@ -11,14 +11,17 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/server"
 )
 
+// AuthInterceptor is responsible for attaching JWT during gRPC calls.
 type AuthInterceptor struct {
 	jwt string
 }
 
+// NewAuthInterceptor creates new AuthInterceptor with provided JWT.
 func NewAuthInterceptor(jwt string) *AuthInterceptor {
 	return &AuthInterceptor{jwt}
 }
 
+// Unary returns unary gROC interceptor.
 func (i *AuthInterceptor) Unary() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,

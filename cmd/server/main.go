@@ -1,3 +1,4 @@
+// Package main runs GoKeeper server CLI.
 package main
 
 import (
@@ -12,6 +13,7 @@ var (
 	buildCommit  string
 )
 
+// NA means "Not Assigned".
 const NA string = "N/A"
 
 func main() {

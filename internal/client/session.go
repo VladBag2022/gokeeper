@@ -10,6 +10,7 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/crypt"
 )
 
+// SessionManager encapsulates primary key storing logic.
 type SessionManager struct {
 	Coder *crypt.Coder
 
@@ -17,6 +18,7 @@ type SessionManager struct {
 	sessionKey   []byte
 }
 
+// NewSessionManagerFromPassword creates new SessionManager from provided password.
 func NewSessionManagerFromPassword(password string) (*SessionManager, error) {
 	sessionKey, err := crypt.GenerateRandomBytes(aes.BlockSize * 2)
 	if err != nil {
@@ -43,6 +45,7 @@ func NewSessionManagerFromPassword(password string) (*SessionManager, error) {
 	return &SessionManager{primaryCoder, encryptedKey, sessionKey}, nil
 }
 
+// NewSessionManagerFromEncryptedKey creates new SessionManager from encrypted key and session key (both hex-formatted).
 func NewSessionManagerFromEncryptedKey(encryptedKeyHex, sessionKeyHex string) (*SessionManager, error) {
 	encryptedKey, err := hex.DecodeString(encryptedKeyHex)
 	if err != nil {
@@ -77,10 +80,12 @@ func NewSessionManagerFromEncryptedKey(encryptedKeyHex, sessionKeyHex string) (*
 	return &SessionManager{primaryCoder, encryptedKey, sessionKey}, nil
 }
 
+// GetEncryptedKey returns encrypted key in hex format.
 func (s *SessionManager) GetEncryptedKey() string {
 	return hex.EncodeToString(s.encryptedKey)
 }
 
+// GetSessionKey returns session key in hex format.
 func (s *SessionManager) GetSessionKey() string {
 	return hex.EncodeToString(s.sessionKey)
 }

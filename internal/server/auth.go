@@ -11,6 +11,7 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/store"
 )
 
+// AuthServer implements gRPC Auth service.
 type AuthServer struct {
 	pb.UnimplementedAuthServer
 
@@ -18,10 +19,12 @@ type AuthServer struct {
 	jwtManager *jwt.Manager
 }
 
+// NewAuthServer returns new AuthServer.
 func NewAuthServer(store store.GRPCStore, jwtManager *jwt.Manager) *AuthServer {
 	return &AuthServer{store: store, jwtManager: jwtManager}
 }
 
+// SignIn checks user credentials and returns JWT.
 func (s *AuthServer) SignIn(ctx context.Context, req *pb.Credentials) (*pb.JWT, error) {
 	id, err := s.store.SignIn(ctx, req)
 	if err != nil {
@@ -36,6 +39,7 @@ func (s *AuthServer) SignIn(ctx context.Context, req *pb.Credentials) (*pb.JWT, 
 	return &pb.JWT{Token: token}, nil
 }
 
+// SignUp registers new user and returns JWT.
 func (s *AuthServer) SignUp(ctx context.Context, req *pb.Credentials) (*pb.JWT, error) {
 	available, err := s.store.IsUsernameAvailable(ctx, req.GetUsername())
 	if err != nil {

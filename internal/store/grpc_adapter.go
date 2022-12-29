@@ -6,52 +6,64 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
+// GRPCAdapter is the gRPC adapter for main Store.
 type GRPCAdapter struct {
 	store Store
 }
 
+// NewGRPCAdapter returns new GRPCAdapter.
 func NewGRPCAdapter(store Store) *GRPCAdapter {
 	return &GRPCAdapter{
 		store: store,
 	}
 }
 
+// IsUsernameAvailable checks whether provided username is available.
 func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) (available bool, err error) {
 	return a.store.IsUsernameAvailable(ctx, username)
 }
 
+// SignIn returns user ID from provided credentials.
 func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
 	return a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
 }
 
+// SignUp registers new user and returns his/her new ID.
 func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
 	return a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
 }
 
+// StoreSecret stores user secret and returns its new ID.
 func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
 	return a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
 }
 
+// UpdateSecret updates secret by its ID.
 func (a *GRPCAdapter) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
 	return a.store.UpdateSecret(ctx, id, fromSecretGRPC(secret))
 }
 
+// DeleteSecret deletes secret by its ID.
 func (a *GRPCAdapter) DeleteSecret(ctx context.Context, id int64) error {
 	return a.store.DeleteSecret(ctx, id)
 }
 
+// StoreMeta stores secret meta and returns ins new ID.
 func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error) {
 	return a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
 }
 
+// UpdateMeta updates meta by its ID.
 func (a *GRPCAdapter) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
 	return a.store.UpdateMeta(ctx, id, fromMetaGRPC(meta))
 }
 
+// DeleteMeta deletes meta by its ID.
 func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
 	return a.store.DeleteMeta(ctx, id)
 }
 
+// GetSecrets returns client' secrets.
 func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error) {
 	secrets = &pb.ClientSecrets{}
 
@@ -64,6 +76,7 @@ func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb
 	return secrets, err
 }
 
+// GetEncryptedKey returns client's encrypted key.
 func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.ClientSecret, err error) {
 	secret = &pb.ClientSecret{}
 
@@ -76,10 +89,12 @@ func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret
 	return secret, err
 }
 
+// IsUserSecret checks whether secret belongs to user.
 func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error) {
 	return a.store.IsUserSecret(ctx, userID, secretID)
 }
 
+// IsUserMeta checks whether meta belongs to meta.
 func (a *GRPCAdapter) IsUserMeta(ctx context.Context, userID, metaID int64) (userMeta bool, err error) {
 	return a.store.IsUserMeta(ctx, userID, metaID)
 }

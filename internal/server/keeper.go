@@ -1,3 +1,4 @@
+// Package server contains the GoKeeper gRPC server.
 package server
 
 import (
@@ -12,12 +13,14 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/store"
 )
 
+// KeeperServer implements gRPC Keeper service.
 type KeeperServer struct {
 	pb.UnimplementedKeeperServer
 
 	store store.GRPCStore
 }
 
+// NewKeeperServer returns new KeeperServer.
 func NewKeeperServer(store store.GRPCStore) *KeeperServer {
 	return &KeeperServer{store: store}
 }

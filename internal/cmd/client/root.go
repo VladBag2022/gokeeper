@@ -1,3 +1,4 @@
+// Package client contains root command for GoKeeper client CLI.
 package client
 
 import (
@@ -6,8 +7,9 @@ import (
 	common "github.com/VladBag2022/gokeeper/internal/cmd"
 )
 
+// Execute start GoKeeper client CLI.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		log.Errorf("failed to execute root command: %s", err)
 	}
 

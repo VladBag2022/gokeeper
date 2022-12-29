@@ -15,18 +15,24 @@ import (
 )
 
 const (
+	// AuthorizationKey is the auth context key which is looked for incoming JWT.
 	AuthorizationKey = "authorization"
-	UserIDKey        = "user_id"
+
+	// UserIDKey is the user context key which is used for storing user ID after successful authorization.
+	UserIDKey = "user_id"
 )
 
+// AuthInterceptor is responsible for checking JWT during gRPC calls.
 type AuthInterceptor struct {
 	jwtManager *jwt.Manager
 }
 
+// NewAuthInterceptor creates new AuthInterceptor with provided JWT Manager.
 func NewAuthInterceptor(jwtManager *jwt.Manager) *AuthInterceptor {
 	return &AuthInterceptor{jwtManager}
 }
 
+// Unary returns unary gROC interceptor.
 func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,

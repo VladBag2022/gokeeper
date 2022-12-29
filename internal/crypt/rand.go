@@ -1,3 +1,4 @@
+// Package crypt contains security functions.
 package crypt
 
 import "crypto/rand"

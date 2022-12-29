@@ -1,3 +1,4 @@
+// Package store contains commands for storing different secrets: credentials, text, blob, credit card.
 package store
 
 import (
@@ -14,6 +15,7 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/proto"
 )
 
+// Cmd is the primary command - "store".
 var Cmd = &cobra.Command{
 	Use: "store",
 }
@@ -26,6 +28,7 @@ func init() {
 	}
 }
 
+// Secret stores provided secret on remote server with the help of gRPC.
 func Secret(secret *proto.Secret) {
 	ctx := context.Background()
 
