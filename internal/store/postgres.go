@@ -21,13 +21,13 @@ func NewPostgresStore(
 	ctx context.Context,
 	databaseDSN string,
 ) (*PostgresStore, error) {
-	db, err := sqlx.Open("pgx", databaseDSN)
+	database, err := sqlx.Open("pgx", databaseDSN)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %s", err)
 	}
 
 	p := &PostgresStore{
-		database: db,
+		database: database,
 	}
 	return p, p.createSchema(ctx)
 }
@@ -274,14 +274,14 @@ func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta
 	defer rows.Close()
 
 	for rows.Next() {
-		var m StoredMeta
+		var storedMeta StoredMeta
 
-		err = rows.Scan(&m.ID, &m.Meta)
+		err = rows.Scan(&storedMeta.ID, &storedMeta.Meta)
 		if err != nil {
 			return meta, fmt.Errorf("failed to scan secret's meta: %s", err)
 		}
 
-		meta = append(meta, m)
+		meta = append(meta, storedMeta)
 	}
 
 	err = rows.Err()

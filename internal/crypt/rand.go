@@ -12,7 +12,7 @@ import (
 // case the caller should not continue.
 func GenerateRandomBytes(n int) ([]byte, error) {
 	buf := make([]byte, n)
-	
+
 	// Note that err == nil only if we read len(buf) bytes.
 	if _, err := rand.Read(buf); err != nil {
 		return nil, fmt.Errorf("failed to read %d random byte(s): %s", n, err)
