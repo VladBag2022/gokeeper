@@ -57,7 +57,7 @@ func TestManager_Verify(t *testing.T) {
 			},
 			accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjQ2MDI1NjcsInVzZXJfaWQiOjF9." +
 				"S6BxLPp_V5pRPg3-7BLf86RVtllqJHFb2S3CTLYRJt8",
-			wantUserID: 1,
+			wantUserID: 0,
 			wantErr:    false,
 		},
 		{
@@ -105,7 +105,7 @@ func TestManager_Verify(t *testing.T) {
 				assert.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				assert.Equal(t, got.UserID, tt.wantUserID)
+				assert.Equal(t, tt.wantUserID, got.UserID)
 			}
 		})
 	}

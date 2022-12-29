@@ -83,11 +83,11 @@ func (p *PostgresStore) createSchema(ctx context.Context) error {
 func (p *PostgresStore) IsUsernameAvailable(
 	ctx context.Context,
 	username string,
-) (available bool, err error) {
+) (bool, error) {
 	var count int64
 
 	row := p.database.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = $1", username)
-	err = row.Scan(&count)
+	err := row.Scan(&count)
 	if err != nil {
 		return false, fmt.Errorf("failed to scan username count: %s", err)
 	}
@@ -96,8 +96,10 @@ func (p *PostgresStore) IsUsernameAvailable(
 }
 
 // SignIn returns user ID from provided credentials.
-func (p *PostgresStore) SignIn(ctx context.Context, credentials Credentials) (id int64, err error) {
-	err = sqlscan.Get(ctx, p.database, &id,
+func (p *PostgresStore) SignIn(ctx context.Context, credentials Credentials) (int64, error) {
+	var id int64
+
+	err := sqlscan.Get(ctx, p.database, &id,
 		"SELECT id FROM users WHERE username = $1 AND password = crypt($2, password)",
 		credentials.Username, credentials.Password)
 	if err != nil {
@@ -108,8 +110,10 @@ func (p *PostgresStore) SignIn(ctx context.Context, credentials Credentials) (id
 }
 
 // SignUp registers new user and returns his/her new ID.
-func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (id int64, err error) {
-	err = p.database.GetContext(ctx, &id,
+func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (int64, error) {
+	var id int64
+
+	err := p.database.GetContext(ctx, &id,
 		"INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt('bf'))) RETURNING id",
 		credentials.Username, credentials.Password)
 	if err != nil {
@@ -120,8 +124,10 @@ func (p *PostgresStore) SignUp(ctx context.Context, credentials Credentials) (id
 }
 
 // StoreSecret stores user secret and returns its new ID.
-func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret Secret) (id int64, err error) {
-	err = p.database.GetContext(ctx, &id,
+func (p *PostgresStore) StoreSecret(ctx context.Context, userID int64, secret Secret) (int64, error) {
+	var id int64
+
+	err := p.database.GetContext(ctx, &id,
 		"INSERT INTO secrets (user_id, data, kind) VALUES ($1, $2, $3) RETURNING id",
 		userID, secret.Data, secret.Kind)
 	if err != nil {
@@ -159,8 +165,10 @@ func (p *PostgresStore) DeleteSecret(ctx context.Context, id int64) error {
 }
 
 // StoreMeta stores secret meta and returns ins new ID.
-func (p *PostgresStore) StoreMeta(ctx context.Context, secretID int64, meta Meta) (id int64, err error) {
-	err = p.database.GetContext(ctx, &id,
+func (p *PostgresStore) StoreMeta(ctx context.Context, secretID int64, meta Meta) (int64, error) {
+	var id int64
+
+	err := p.database.GetContext(ctx, &id,
 		"INSERT INTO meta (secret_id, text) VALUES ($1, $2) RETURNING id",
 		secretID, meta)
 	if err != nil {
@@ -189,7 +197,9 @@ func (p *PostgresStore) DeleteMeta(ctx context.Context, id int64) error {
 }
 
 // GetSecrets returns user' secrets.
-func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets []StoredSecret, err error) {
+func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) ([]StoredSecret, error) {
+	var secrets []StoredSecret
+
 	rows, err := p.database.QueryContext(ctx,
 		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind != $2",
 		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
@@ -223,12 +233,14 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets [
 }
 
 // GetEncryptedKey returns user's encrypted key.
-func (p *PostgresStore) GetEncryptedKey(ctx context.Context, userID int64) (secret StoredSecret, err error) {
+func (p *PostgresStore) GetEncryptedKey(ctx context.Context, userID int64) (StoredSecret, error) {
 	row := p.database.QueryRowContext(ctx,
 		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind = $2 LIMIT 1",
 		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
 
-	if err = row.Scan(&secret.ID, &secret.Secret.Data, &secret.Secret.Kind); err != nil {
+	var secret StoredSecret
+
+	if err := row.Scan(&secret.ID, &secret.Secret.Data, &secret.Secret.Kind); err != nil {
 		return secret, fmt.Errorf("failed to scan secret: %s", err)
 	}
 
@@ -266,10 +278,12 @@ func (p *PostgresStore) IsUserMeta(ctx context.Context, userID, metaID int64) (b
 	return count > 0, nil
 }
 
-func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta []StoredMeta, err error) {
+func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) ([]StoredMeta, error) {
+	var metas []StoredMeta
+
 	rows, err := p.database.QueryContext(ctx, "SELECT id, text FROM meta WHERE secret_id = $1", secretID)
 	if err != nil {
-		return meta, fmt.Errorf("failed to query secret' meta: %s", err)
+		return metas, fmt.Errorf("failed to query secret' meta: %s", err)
 	}
 	defer rows.Close()
 
@@ -278,10 +292,10 @@ func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta
 
 		err = rows.Scan(&storedMeta.ID, &storedMeta.Meta)
 		if err != nil {
-			return meta, fmt.Errorf("failed to scan secret's meta: %s", err)
+			return metas, fmt.Errorf("failed to scan secret's meta: %s", err)
 		}
 
-		meta = append(meta, storedMeta)
+		metas = append(metas, storedMeta)
 	}
 
 	err = rows.Err()
@@ -289,5 +303,5 @@ func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta
 		return nil, fmt.Errorf("failed to retrieve secret' meta: %s", err)
 	}
 
-	return meta, nil
+	return metas, nil
 }

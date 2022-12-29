@@ -20,8 +20,8 @@ func NewGRPCAdapter(store Store) *GRPCAdapter {
 }
 
 // IsUsernameAvailable checks whether provided username is available.
-func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) (available bool, err error) {
-	available, err = a.store.IsUsernameAvailable(ctx, username)
+func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) (bool, error) {
+	available, err := a.store.IsUsernameAvailable(ctx, username)
 	if err != nil {
 		return available, fmt.Errorf("failed to call IsUsernameAvailable from gRPC store adapter: %s", err)
 	}
@@ -30,8 +30,8 @@ func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) 
 }
 
 // SignIn returns user ID from provided credentials.
-func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	id, err = a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
+func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (int64, error) {
+	id, err := a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
 	if err != nil {
 		return 0, fmt.Errorf("failed to call SignIn from gRPC store adapter: %s", err)
 	}
@@ -40,8 +40,8 @@ func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (
 }
 
 // SignUp registers new user and returns his/her new ID.
-func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	id, err = a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
+func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (int64, error) {
+	id, err := a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
 	if err != nil {
 		return 0, fmt.Errorf("failed to call SignUp from gRPC store adapter: %s", err)
 	}
@@ -50,8 +50,8 @@ func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (
 }
 
 // StoreSecret stores user secret and returns its new ID.
-func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
-	id, err = a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
+func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (int64, error) {
+	id, err := a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
 	if err != nil {
 		return 0, fmt.Errorf("failed to call StoreSecret from gRPC store adapter: %s", err)
 	}
@@ -78,8 +78,8 @@ func (a *GRPCAdapter) DeleteSecret(ctx context.Context, id int64) error {
 }
 
 // StoreMeta stores secret meta and returns ins new ID.
-func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error) {
-	id, err = a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
+func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (int64, error) {
+	id, err := a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
 	if err != nil {
 		return 0, fmt.Errorf("failed to call StoreMeta from gRPC store adapter: %s", err)
 	}
@@ -106,7 +106,7 @@ func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
 }
 
 // GetSecrets returns user' secrets.
-func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb.StoredSecrets, err error) {
+func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (*pb.StoredSecrets, error) {
 	ss, err := a.store.GetSecrets(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call GetSecrets from gRPC store adapter: %s", err)
@@ -116,7 +116,7 @@ func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb
 }
 
 // GetEncryptedKey returns user's encrypted key.
-func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.StoredSecret, err error) {
+func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (*pb.StoredSecret, error) {
 	k, err := a.store.GetEncryptedKey(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call GetEncryptedKey from gRPC store adapter: %s", err)
@@ -126,8 +126,8 @@ func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret
 }
 
 // IsUserSecret checks whether secret belongs to user.
-func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error) {
-	userSecret, err = a.store.IsUserSecret(ctx, userID, secretID)
+func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (bool, error) {
+	userSecret, err := a.store.IsUserSecret(ctx, userID, secretID)
 	if err != nil {
 		err = fmt.Errorf("failed to call IsUserSecret from gRPC store adapter: %s", err)
 	}
@@ -136,8 +136,8 @@ func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) 
 }
 
 // IsUserMeta checks whether meta belongs to meta.
-func (a *GRPCAdapter) IsUserMeta(ctx context.Context, userID, metaID int64) (userMeta bool, err error) {
-	userMeta, err = a.store.IsUserMeta(ctx, userID, metaID)
+func (a *GRPCAdapter) IsUserMeta(ctx context.Context, userID, metaID int64) (bool, error) {
+	userMeta, err := a.store.IsUserMeta(ctx, userID, metaID)
 	if err != nil {
 		err = fmt.Errorf("failed to call IsUserMeta from gRPC store adapter: %s", err)
 	}
@@ -163,7 +163,7 @@ func fromMetaGRPC(meta *pb.Meta) Meta {
 	return Meta(meta.GetText())
 }
 
-func toStoredSecretGRPC(secret StoredSecret) (pbSecret *pb.StoredSecret) {
+func toStoredSecretGRPC(secret StoredSecret) *pb.StoredSecret {
 	return &pb.StoredSecret{
 		Secret: &pb.Secret{
 			Data: secret.Secret.Data,
@@ -173,7 +173,7 @@ func toStoredSecretGRPC(secret StoredSecret) (pbSecret *pb.StoredSecret) {
 	}
 }
 
-func toStoredMetaGRPC(meta StoredMeta) (pbMeta *pb.StoredMeta) {
+func toStoredMetaGRPC(meta StoredMeta) *pb.StoredMeta {
 	return &pb.StoredMeta{
 		Meta: &pb.Meta{
 			Text: string(meta.Meta),
@@ -182,8 +182,8 @@ func toStoredMetaGRPC(meta StoredMeta) (pbMeta *pb.StoredMeta) {
 	}
 }
 
-func toStoredMetasGRPC(metas []StoredMeta) (pbMetas []*pb.StoredMeta) {
-	pbMetas = make([]*pb.StoredMeta, len(metas))
+func toStoredMetasGRPC(metas []StoredMeta) []*pb.StoredMeta {
+	pbMetas := make([]*pb.StoredMeta, len(metas))
 
 	for i, m := range metas {
 		pbMetas[i] = toStoredMetaGRPC(m)
@@ -192,8 +192,8 @@ func toStoredMetasGRPC(metas []StoredMeta) (pbMetas []*pb.StoredMeta) {
 	return pbMetas
 }
 
-func toStoredSecretsGRPC(secrets []StoredSecret) (pbSecrets *pb.StoredSecrets) {
-	pbSecrets = &pb.StoredSecrets{}
+func toStoredSecretsGRPC(secrets []StoredSecret) *pb.StoredSecrets {
+	pbSecrets := &pb.StoredSecrets{}
 
 	pbSecrets.Secrets = make([]*pb.StoredSecret, len(secrets))
 	for i, s := range secrets {

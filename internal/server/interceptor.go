@@ -50,7 +50,7 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (i *AuthInterceptor) authorize(ctx context.Context, method string) (userID int64, err error) {
+func (i *AuthInterceptor) authorize(ctx context.Context, method string) (int64, error) {
 	if strings.Contains(method, "Sign") {
 		return 0, nil
 	}
