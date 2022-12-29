@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/georgysavva/scany/sqlscan"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v4/stdlib" // use pgx
 	"github.com/jmoiron/sqlx"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
