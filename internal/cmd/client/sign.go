@@ -72,7 +72,7 @@ func signRun(_ *cobra.Command, _ []string) {
 		jwt, err = rpcClient.Auth.SignIn(ctx, credentials)
 		if err != nil {
 			log.Errorf("failed to sign in: %s", err)
-			
+
 			return
 		}
 	}

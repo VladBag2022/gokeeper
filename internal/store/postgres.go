@@ -88,8 +88,7 @@ func (p *PostgresStore) IsUsernameAvailable(
 	var count int64
 
 	row := p.database.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = $1", username)
-	err := row.Scan(&count)
-	if err != nil {
+	if err := row.Scan(&count); err != nil {
 		return false, fmt.Errorf("failed to scan username count: %s", err)
 	}
 
