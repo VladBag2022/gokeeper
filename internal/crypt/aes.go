@@ -14,9 +14,9 @@ type Coder struct {
 
 // NewCoder returns new Coder from provided secret key.
 func NewCoder(key []byte) (*Coder, error) {
-	s := sha512.Sum512(key)
+	hash := sha512.Sum512(key)
 
-	c, err := aes.NewCipher(s[:aes.BlockSize*2])
+	c, err := aes.NewCipher(hash[:aes.BlockSize*2])
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func NewCoder(key []byte) (*Coder, error) {
 
 	return &Coder{
 		gcm:   gcm,
-		nonce: s[len(s)-gcm.NonceSize():],
+		nonce: hash[len(hash)-gcm.NonceSize():],
 	}, nil
 }
 

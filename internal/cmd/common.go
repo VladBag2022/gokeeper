@@ -50,7 +50,7 @@ func SaveConfigOnDemand(saveConfig bool, configFile, defaultConfigFile string) {
 func NewGRPCClient() (*client.Client, error) {
 	authInterceptor := client.NewAuthInterceptor(viper.GetString("JWT"))
 
-	cc, err := grpc.Dial(viper.GetString("ServerAddress"),
+	clientConn, err := grpc.Dial(viper.GetString("ServerAddress"),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithUnaryInterceptor(authInterceptor.Unary()))
 	if err != nil {
@@ -58,5 +58,5 @@ func NewGRPCClient() (*client.Client, error) {
 		return nil, err
 	}
 
-	return client.NewClient(cc), nil
+	return client.NewClient(clientConn), nil
 }

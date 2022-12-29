@@ -57,16 +57,16 @@ func (s *KeeperServer) permitMetaID(ctx context.Context, metaID int64) error {
 }
 
 func userIDFromContext(ctx context.Context) (userID int64, err error) {
-	var s string
+	var userIDStr string
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		values := md.Get(UserIDKey)
 		if len(values) > 0 {
-			s = values[0]
+			userIDStr = values[0]
 		}
 	}
-	if len(s) == 0 {
+	if len(userIDStr) == 0 {
 		return 0, fmt.Errorf("failed to get userID from context: %s",
 			status.Error(codes.Unauthenticated, "missing userID"))
 	}
-	return strconv.ParseInt(s, 10, 64)
+	return strconv.ParseInt(userIDStr, 10, 64)
 }

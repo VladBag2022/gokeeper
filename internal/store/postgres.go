@@ -156,18 +156,18 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets [
 	defer rows.Close()
 
 	for rows.Next() {
-		var s ClientSecret
-		err = rows.Scan(&s.ID, &s.Secret.Data, &s.Secret.Kind)
+		var secret ClientSecret
+		err = rows.Scan(&secret.ID, &secret.Secret.Data, &secret.Secret.Kind)
 		if err != nil {
 			return nil, err
 		}
 
-		s.Meta, err = p.getClientMeta(ctx, s.ID)
+		secret.Meta, err = p.getClientMeta(ctx, secret.ID)
 		if err != nil {
 			return nil, err
 		}
 
-		secrets = append(secrets, s)
+		secrets = append(secrets, secret)
 	}
 
 	err = rows.Err()
