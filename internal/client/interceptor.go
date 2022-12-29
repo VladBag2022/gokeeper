@@ -32,10 +32,12 @@ func (i *AuthInterceptor) Unary() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		log.Infof("call %s", method)
+
 		if strings.Contains(method, "Sign") {
 			log.Debug("not attaching JWT during call")
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}
+
 		log.Debug("attaching JWT during call")
 		return invoker(i.attachToken(ctx), method, req, reply, cc, opts...)
 	}

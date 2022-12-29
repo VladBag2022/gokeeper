@@ -13,18 +13,18 @@ var (
 	buildCommit  string
 )
 
-// NA means "Not Assigned".
-const NA string = "N/A"
+// NAText means "Not Assigned".
+const NAText string = "N/A"
 
 func main() {
 	if len(buildVersion) == 0 {
-		buildVersion = NA
+		buildVersion = NAText
 	}
 	if len(buildDate) == 0 {
-		buildDate = NA
+		buildDate = NAText
 	}
 	if len(buildCommit) == 0 {
-		buildCommit = NA
+		buildCommit = NAText
 	}
 	fmt.Printf("Build version: %s\n", buildVersion)
 	fmt.Printf("Build date: %s\n", buildDate)

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/ptypes/empty"
 
@@ -15,6 +16,9 @@ func (s *KeeperServer) StoreSecret(ctx context.Context, secret *pb.Secret) (*pb.
 		return nil, err
 	}
 	secretID, err := s.store.StoreSecret(ctx, userID, secret)
+	if err != nil {
+		err = fmt.Errorf("failed to store secret: %s", err)
+	}
 	return &pb.ClientSecret{
 		Id:     secretID,
 		Secret: secret,
@@ -44,7 +48,7 @@ func (s *KeeperServer) StoreMeta(ctx context.Context, req *pb.StoreMetaRequest) 
 	}
 	metaID, err := s.store.StoreMeta(ctx, req.GetSecretId(), req.GetMeta())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to store meta: %s", err)
 	}
 	return &pb.ClientMeta{
 		Id:   metaID,

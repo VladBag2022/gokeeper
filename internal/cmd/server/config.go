@@ -34,7 +34,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&saveConfig, "save", "s", false, "save configuration including acquired JWT")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "be verbose")
 
-	for key, f := range map[string]string{
+	for viperKey, flagName := range map[string]string{
 		"ListenAddress": "address",
 		"DatabaseDSN":   "database",
 		"CertPEM":       "cert",
@@ -42,12 +42,12 @@ func init() {
 		"JWTDuration":   "jwt",
 		"Verbose":       "verbose",
 	} {
-		if err := viper.BindPFlag(key, rootCmd.PersistentFlags().Lookup(f)); err != nil {
-			log.Errorf("failed to bind flag %s: %s", f, err)
+		if err := viper.BindPFlag(viperKey, rootCmd.PersistentFlags().Lookup(flagName)); err != nil {
+			log.Errorf("failed to bind flag %s: %s", flagName, err)
 		}
 	}
 
-	for key, env := range map[string]string{
+	for viperKey, envVar := range map[string]string{
 		"ListenAddress": "SERVER_ADDRESS",
 		"DatabaseDSN":   "DATABASE_DSN",
 		"CertPEMFile":   "CERT_PEM",
@@ -55,8 +55,8 @@ func init() {
 		"JWTDuration":   "JWT_DURATION",
 		"Verbose":       "VERBOSE",
 	} {
-		if err := viper.BindEnv(key, env); err != nil {
-			log.Errorf("failed to bind environment variable %s: %s", env, err)
+		if err := viper.BindEnv(viperKey, envVar); err != nil {
+			log.Errorf("failed to bind environment variable %s: %s", envVar, err)
 		}
 	}
 

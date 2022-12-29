@@ -2,6 +2,7 @@ package meta
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
@@ -20,7 +21,7 @@ var deleteCmd = &cobra.Command{
 		}
 		_, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse meta ID: %s", err)
 		}
 		return nil
 	},

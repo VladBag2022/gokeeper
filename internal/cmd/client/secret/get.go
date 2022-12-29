@@ -57,6 +57,7 @@ fs:
 		data, dErr := sessionManager.Coder.Decrypt(secret.GetSecret().GetData())
 		if dErr != nil {
 			log.Errorf("failed to decrypt secret data: %s", dErr)
+
 			continue
 		}
 
@@ -66,6 +67,7 @@ fs:
 			credentials := &pb.Credentials{}
 			if uErr := proto.Unmarshal(data, credentials); uErr != nil {
 				log.Errorf("failed to unmarshal credentials: %s", uErr)
+
 				continue fs
 			}
 			text = credentials.String()
@@ -75,6 +77,7 @@ fs:
 			card := &pb.CreditCard{}
 			if uErr := proto.Unmarshal(data, card); uErr != nil {
 				log.Errorf("failed to unmarshal credit card: %s", uErr)
+
 				continue fs
 			}
 			text = card.String()

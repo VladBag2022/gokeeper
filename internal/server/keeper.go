@@ -3,6 +3,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc/codes"
@@ -32,7 +33,7 @@ func (s *KeeperServer) permitSecretID(ctx context.Context, secretID int64) error
 	}
 	userSecret, err := s.store.IsUserSecret(ctx, userID, secretID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check wether secret belongs to user: %s", err)
 	}
 	if !userSecret {
 		return status.Errorf(codes.PermissionDenied, "IDOR attack attempt detected")
@@ -47,7 +48,7 @@ func (s *KeeperServer) permitMetaID(ctx context.Context, metaID int64) error {
 	}
 	userMeta, err := s.store.IsUserMeta(ctx, userID, metaID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check wether meta belongs to user: %s", err)
 	}
 	if !userMeta {
 		return status.Errorf(codes.PermissionDenied, "IDOR attack attempt detected")
@@ -64,7 +65,8 @@ func userIDFromContext(ctx context.Context) (userID int64, err error) {
 		}
 	}
 	if len(s) == 0 {
-		return 0, status.Error(codes.Unauthenticated, "missing userID")
+		return 0, fmt.Errorf("failed to get userID from context: %s",
+			status.Error(codes.Unauthenticated, "missing userID"))
 	}
 	return strconv.ParseInt(s, 10, 64)
 }

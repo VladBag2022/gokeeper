@@ -50,6 +50,7 @@ func rootRun(_ *cobra.Command, _ []string) {
 		log.Errorf("failed to connect to Postgres store: %s", err)
 		return
 	}
+
 	defer func() {
 		if err = postgresStore.Close(); err != nil {
 			log.Errorf("failed to close store: %s", err)
