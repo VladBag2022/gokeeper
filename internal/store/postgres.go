@@ -242,8 +242,7 @@ func (p *PostgresStore) IsUserSecret(ctx context.Context, userID, secretID int64
 	row := p.database.QueryRowContext(ctx, "SELECT COUNT(*) FROM secrets WHERE id = $1 AND user_id = $2",
 		secretID, userID)
 
-	err := row.Scan(&count)
-	if err != nil {
+	if err := row.Scan(&count); err != nil {
 		return false, fmt.Errorf("failed to scan count: %s", err)
 	}
 
@@ -260,8 +259,7 @@ func (p *PostgresStore) IsUserMeta(ctx context.Context, userID, metaID int64) (b
 			"AND meta.id = $1 AND user_id = $2",
 		metaID, userID)
 
-	err := row.Scan(&count)
-	if err != nil {
+	if err := row.Scan(&count); err != nil {
 		return false, fmt.Errorf("failed to scan user' meta count: %s", err)
 	}
 
