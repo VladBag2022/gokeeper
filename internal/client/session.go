@@ -21,12 +21,12 @@ type SessionManager struct {
 func NewSessionManagerFromPassword(password string) (*SessionManager, error) {
 	sessionKey, err := crypt.GenerateRandomBytes(aes.BlockSize * 2)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate session key: %s", err)
+		return nil, fmt.Errorf("failed to generate session key: %w", err)
 	}
 
 	tempCoder, err := crypt.NewCoder(sessionKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp coder: %s", err)
+		return nil, fmt.Errorf("failed to create temp coder: %w", err)
 	}
 
 	key := sha512.Sum512([]byte(password))
@@ -35,7 +35,7 @@ func NewSessionManagerFromPassword(password string) (*SessionManager, error) {
 
 	primaryCoder, err := crypt.NewCoder(key[:])
 	if err != nil {
-		return nil, fmt.Errorf("failed to create coder: %s", err)
+		return nil, fmt.Errorf("failed to create coder: %w", err)
 	}
 
 	return &SessionManager{primaryCoder, encryptedKey, sessionKey}, nil
@@ -45,27 +45,27 @@ func NewSessionManagerFromPassword(password string) (*SessionManager, error) {
 func NewSessionManagerFromEncryptedKey(encryptedKeyHex, sessionKeyHex string) (*SessionManager, error) {
 	encryptedKey, err := hex.DecodeString(encryptedKeyHex)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode hex to encrypted key: %s", err)
+		return nil, fmt.Errorf("failed to decode hex to encrypted key: %w", err)
 	}
 
 	sessionKey, err := hex.DecodeString(sessionKeyHex)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode hex to session key: %s", err)
+		return nil, fmt.Errorf("failed to decode hex to session key: %w", err)
 	}
 
 	tempCoder, err := crypt.NewCoder(sessionKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp coder: %s", err)
+		return nil, fmt.Errorf("failed to create temp coder: %w", err)
 	}
 
 	key, err := tempCoder.Decrypt(encryptedKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode encrypted key: %s", err)
+		return nil, fmt.Errorf("failed to decode encrypted key: %w", err)
 	}
 
 	primaryCoder, err := crypt.NewCoder(key)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create coder: %s", err)
+		return nil, fmt.Errorf("failed to create coder: %w", err)
 	}
 
 	return &SessionManager{primaryCoder, encryptedKey, sessionKey}, nil

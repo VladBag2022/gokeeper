@@ -18,7 +18,7 @@ func (s *KeeperServer) StoreSecret(ctx context.Context, secret *pb.Secret) (*pb.
 
 	secretID, err := s.store.StoreSecret(ctx, userID, secret)
 	if err != nil {
-		return nil, fmt.Errorf("failed to store secret: %s", err)
+		return nil, fmt.Errorf("failed to store secret: %w", err)
 	}
 
 	return &pb.StoredSecret{
@@ -34,7 +34,7 @@ func (s *KeeperServer) UpdateSecret(ctx context.Context, secret *pb.StoredSecret
 	}
 
 	if err := s.store.UpdateSecret(ctx, secret.GetId(), secret.GetSecret()); err != nil {
-		return nil, fmt.Errorf("failed to update secret in store: %s", err)
+		return nil, fmt.Errorf("failed to update secret in store: %w", err)
 	}
 
 	return &empty.Empty{}, nil
@@ -47,7 +47,7 @@ func (s *KeeperServer) DeleteSecret(ctx context.Context, secret *pb.StoredSecret
 	}
 
 	if err := s.store.DeleteSecret(ctx, secret.GetId()); err != nil {
-		return nil, fmt.Errorf("failed to delete secret from store: %s", err)
+		return nil, fmt.Errorf("failed to delete secret from store: %w", err)
 	}
 
 	return &empty.Empty{}, nil
@@ -61,7 +61,7 @@ func (s *KeeperServer) StoreMeta(ctx context.Context, req *pb.StoreMetaRequest) 
 
 	metaID, err := s.store.StoreMeta(ctx, req.GetSecretId(), req.GetMeta())
 	if err != nil {
-		return nil, fmt.Errorf("failed to store meta: %s", err)
+		return nil, fmt.Errorf("failed to store meta: %w", err)
 	}
 
 	return &pb.StoredMeta{
@@ -77,7 +77,7 @@ func (s *KeeperServer) UpdateMeta(ctx context.Context, meta *pb.StoredMeta) (*em
 	}
 
 	if err := s.store.UpdateMeta(ctx, meta.GetId(), meta.GetMeta()); err != nil {
-		return nil, fmt.Errorf("failed to update meta in store: %s", err)
+		return nil, fmt.Errorf("failed to update meta in store: %w", err)
 	}
 
 	return &empty.Empty{}, nil
@@ -90,7 +90,7 @@ func (s *KeeperServer) DeleteMeta(ctx context.Context, meta *pb.StoredMeta) (*em
 	}
 
 	if err := s.store.DeleteMeta(ctx, meta.GetId()); err != nil {
-		return nil, fmt.Errorf("failed to delete meta from store: %s", err)
+		return nil, fmt.Errorf("failed to delete meta from store: %w", err)
 	}
 
 	return &empty.Empty{}, nil
@@ -105,7 +105,7 @@ func (s *KeeperServer) GetSecrets(ctx context.Context, _ *empty.Empty) (*pb.Stor
 
 	secrets, err := s.store.GetSecrets(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user' secrets from store: %s", err)
+		return nil, fmt.Errorf("failed to get user' secrets from store: %w", err)
 	}
 
 	return secrets, nil
@@ -120,7 +120,7 @@ func (s *KeeperServer) GetEncryptedKey(ctx context.Context, _ *empty.Empty) (*pb
 
 	secret, err := s.store.GetEncryptedKey(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user's encrypted key from store: %s", err)
+		return nil, fmt.Errorf("failed to get user's encrypted key from store: %w", err)
 	}
 
 	return secret, nil

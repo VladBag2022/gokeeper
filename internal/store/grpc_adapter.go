@@ -23,7 +23,7 @@ func NewGRPCAdapter(store Store) *GRPCAdapter {
 func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) (bool, error) {
 	available, err := a.store.IsUsernameAvailable(ctx, username)
 	if err != nil {
-		return available, fmt.Errorf("failed to call IsUsernameAvailable from gRPC store adapter: %s", err)
+		return available, fmt.Errorf("failed to call IsUsernameAvailable from gRPC store adapter: %w", err)
 	}
 
 	return available, nil
@@ -33,7 +33,7 @@ func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) 
 func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (int64, error) {
 	id, err := a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
 	if err != nil {
-		return 0, fmt.Errorf("failed to call SignIn from gRPC store adapter: %s", err)
+		return 0, fmt.Errorf("failed to call SignIn from gRPC store adapter: %w", err)
 	}
 
 	return id, nil
@@ -43,7 +43,7 @@ func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (
 func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (int64, error) {
 	id, err := a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
 	if err != nil {
-		return 0, fmt.Errorf("failed to call SignUp from gRPC store adapter: %s", err)
+		return 0, fmt.Errorf("failed to call SignUp from gRPC store adapter: %w", err)
 	}
 
 	return id, nil
@@ -53,7 +53,7 @@ func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (
 func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (int64, error) {
 	id, err := a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
 	if err != nil {
-		return 0, fmt.Errorf("failed to call StoreSecret from gRPC store adapter: %s", err)
+		return 0, fmt.Errorf("failed to call StoreSecret from gRPC store adapter: %w", err)
 	}
 
 	return id, nil
@@ -62,7 +62,7 @@ func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.
 // UpdateSecret updates secret by its ID.
 func (a *GRPCAdapter) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
 	if err := a.store.UpdateSecret(ctx, id, fromSecretGRPC(secret)); err != nil {
-		return fmt.Errorf("failed to call UpdateSecret from gRPC store adapter: %s", err)
+		return fmt.Errorf("failed to call UpdateSecret from gRPC store adapter: %w", err)
 	}
 
 	return nil
@@ -71,7 +71,7 @@ func (a *GRPCAdapter) UpdateSecret(ctx context.Context, id int64, secret *pb.Sec
 // DeleteSecret deletes secret by its ID.
 func (a *GRPCAdapter) DeleteSecret(ctx context.Context, id int64) error {
 	if err := a.store.DeleteSecret(ctx, id); err != nil {
-		return fmt.Errorf("failed to call DeleteSecret from gRPC store adapter: %s", err)
+		return fmt.Errorf("failed to call DeleteSecret from gRPC store adapter: %w", err)
 	}
 
 	return nil
@@ -81,7 +81,7 @@ func (a *GRPCAdapter) DeleteSecret(ctx context.Context, id int64) error {
 func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (int64, error) {
 	id, err := a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
 	if err != nil {
-		return 0, fmt.Errorf("failed to call StoreMeta from gRPC store adapter: %s", err)
+		return 0, fmt.Errorf("failed to call StoreMeta from gRPC store adapter: %w", err)
 	}
 
 	return id, nil
@@ -90,7 +90,7 @@ func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Me
 // UpdateMeta updates meta by its ID.
 func (a *GRPCAdapter) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
 	if err := a.store.UpdateMeta(ctx, id, fromMetaGRPC(meta)); err != nil {
-		return fmt.Errorf("failed to call UpdateMeta from gRPC store adapter: %s", err)
+		return fmt.Errorf("failed to call UpdateMeta from gRPC store adapter: %w", err)
 	}
 
 	return nil
@@ -99,7 +99,7 @@ func (a *GRPCAdapter) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) e
 // DeleteMeta deletes meta by its ID.
 func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
 	if err := a.store.DeleteMeta(ctx, id); err != nil {
-		return fmt.Errorf("failed to call DeleteMeta from gRPC store adapter: %s", err)
+		return fmt.Errorf("failed to call DeleteMeta from gRPC store adapter: %w", err)
 	}
 
 	return nil
@@ -109,7 +109,7 @@ func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
 func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (*pb.StoredSecrets, error) {
 	ss, err := a.store.GetSecrets(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to call GetSecrets from gRPC store adapter: %s", err)
+		return nil, fmt.Errorf("failed to call GetSecrets from gRPC store adapter: %w", err)
 	}
 
 	return toStoredSecretsGRPC(ss), nil
@@ -119,7 +119,7 @@ func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (*pb.StoredS
 func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (*pb.StoredSecret, error) {
 	k, err := a.store.GetEncryptedKey(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to call GetEncryptedKey from gRPC store adapter: %s", err)
+		return nil, fmt.Errorf("failed to call GetEncryptedKey from gRPC store adapter: %w", err)
 	}
 
 	return toStoredSecretGRPC(k), nil
@@ -129,7 +129,7 @@ func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (*pb.St
 func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (bool, error) {
 	userSecret, err := a.store.IsUserSecret(ctx, userID, secretID)
 	if err != nil {
-		err = fmt.Errorf("failed to call IsUserSecret from gRPC store adapter: %s", err)
+		err = fmt.Errorf("failed to call IsUserSecret from gRPC store adapter: %w", err)
 	}
 
 	return userSecret, err
@@ -139,7 +139,7 @@ func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) 
 func (a *GRPCAdapter) IsUserMeta(ctx context.Context, userID, metaID int64) (bool, error) {
 	userMeta, err := a.store.IsUserMeta(ctx, userID, metaID)
 	if err != nil {
-		err = fmt.Errorf("failed to call IsUserMeta from gRPC store adapter: %s", err)
+		err = fmt.Errorf("failed to call IsUserMeta from gRPC store adapter: %w", err)
 	}
 
 	return userMeta, err

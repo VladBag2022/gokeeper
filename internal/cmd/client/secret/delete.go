@@ -21,7 +21,7 @@ var deleteCmd = &cobra.Command{
 		}
 		_, err := strconv.ParseInt(args[0], 10, 64)
 		if err != nil {
-			return fmt.Errorf("failed to parse secret ID: %s", err)
+			return fmt.Errorf("failed to parse secret ID: %w", err)
 		}
 
 		return nil

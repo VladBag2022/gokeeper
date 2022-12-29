@@ -19,12 +19,12 @@ func NewCoder(key []byte) (*Coder, error) {
 
 	c, err := aes.NewCipher(hash[:aes.BlockSize*2])
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AES cipher: %s", err)
+		return nil, fmt.Errorf("failed to create AES cipher: %w", err)
 	}
 
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GCM: %s", err)
+		return nil, fmt.Errorf("failed to create GCM: %w", err)
 	}
 
 	return &Coder{
@@ -42,7 +42,7 @@ func (c *Coder) Encrypt(plain []byte) []byte {
 func (c *Coder) Decrypt(message []byte) ([]byte, error) {
 	plain, err := c.gcm.Open(nil, c.nonce, message, nil)
 	if err != nil {
-		return plain, fmt.Errorf("failed to decrypt ciphertext: %s", err)
+		return plain, fmt.Errorf("failed to decrypt ciphertext: %w", err)
 	}
 
 	return plain, nil

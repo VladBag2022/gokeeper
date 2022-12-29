@@ -34,7 +34,7 @@ func (s *KeeperServer) permitSecretID(ctx context.Context, secretID int64) error
 
 	userSecret, err := s.store.IsUserSecret(ctx, userID, secretID)
 	if err != nil {
-		return fmt.Errorf("failed to check wether secret belongs to user: %s", err)
+		return fmt.Errorf("failed to check wether secret belongs to user: %w", err)
 	}
 
 	if !userSecret {
@@ -52,7 +52,7 @@ func (s *KeeperServer) permitMetaID(ctx context.Context, metaID int64) error {
 
 	userMeta, err := s.store.IsUserMeta(ctx, userID, metaID)
 	if err != nil {
-		return fmt.Errorf("failed to check wether meta belongs to user: %s", err)
+		return fmt.Errorf("failed to check wether meta belongs to user: %w", err)
 	}
 
 	if !userMeta {
@@ -73,13 +73,13 @@ func userIDFromContext(ctx context.Context) (int64, error) {
 	}
 
 	if len(userIDStr) == 0 {
-		return 0, fmt.Errorf("failed to get userID from context: %s",
+		return 0, fmt.Errorf("failed to get userID from context: %w",
 			status.Error(codes.Unauthenticated, "missing userID"))
 	}
 
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("failed to parse userID from context: %s", err)
+		return 0, fmt.Errorf("failed to parse userID from context: %w", err)
 	}
 
 	return userID, nil

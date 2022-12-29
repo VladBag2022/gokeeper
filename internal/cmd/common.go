@@ -55,7 +55,7 @@ func NewGRPCClient() (*client.Client, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithUnaryInterceptor(authInterceptor.Unary()))
 	if err != nil {
-		return nil, fmt.Errorf("failed to dial server: %s", err)
+		return nil, fmt.Errorf("failed to dial server: %w", err)
 	}
 
 	return client.NewClient(clientConn), nil

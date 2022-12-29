@@ -15,7 +15,7 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 
 	// Note that err == nil only if we read len(buf) bytes.
 	if _, err := rand.Read(buf); err != nil {
-		return nil, fmt.Errorf("failed to read %d random byte(s): %s", n, err)
+		return nil, fmt.Errorf("failed to read %d random byte(s): %w", n, err)
 	}
 
 	return buf, nil
