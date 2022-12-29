@@ -145,14 +145,14 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KeeperClient interface {
-	StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*ClientSecret, error)
-	UpdateSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error)
-	DeleteSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error)
-	StoreMeta(ctx context.Context, in *StoreMetaRequest, opts ...grpc.CallOption) (*ClientMeta, error)
-	UpdateMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error)
-	DeleteMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetSecrets(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecrets, error)
-	GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecret, error)
+	StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*StoredSecret, error)
+	UpdateSecret(ctx context.Context, in *StoredSecret, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteSecret(ctx context.Context, in *StoredSecret, opts ...grpc.CallOption) (*empty.Empty, error)
+	StoreMeta(ctx context.Context, in *StoreMetaRequest, opts ...grpc.CallOption) (*StoredMeta, error)
+	UpdateMeta(ctx context.Context, in *StoredMeta, opts ...grpc.CallOption) (*empty.Empty, error)
+	DeleteMeta(ctx context.Context, in *StoredMeta, opts ...grpc.CallOption) (*empty.Empty, error)
+	GetSecrets(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*StoredSecrets, error)
+	GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*StoredSecret, error)
 }
 
 type keeperClient struct {
@@ -163,8 +163,8 @@ func NewKeeperClient(cc grpc.ClientConnInterface) KeeperClient {
 	return &keeperClient{cc}
 }
 
-func (c *keeperClient) StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*ClientSecret, error) {
-	out := new(ClientSecret)
+func (c *keeperClient) StoreSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*StoredSecret, error) {
+	out := new(StoredSecret)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/StoreSecret", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -172,7 +172,7 @@ func (c *keeperClient) StoreSecret(ctx context.Context, in *Secret, opts ...grpc
 	return out, nil
 }
 
-func (c *keeperClient) UpdateSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *keeperClient) UpdateSecret(ctx context.Context, in *StoredSecret, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/UpdateSecret", in, out, opts...)
 	if err != nil {
@@ -181,7 +181,7 @@ func (c *keeperClient) UpdateSecret(ctx context.Context, in *ClientSecret, opts 
 	return out, nil
 }
 
-func (c *keeperClient) DeleteSecret(ctx context.Context, in *ClientSecret, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *keeperClient) DeleteSecret(ctx context.Context, in *StoredSecret, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/DeleteSecret", in, out, opts...)
 	if err != nil {
@@ -190,8 +190,8 @@ func (c *keeperClient) DeleteSecret(ctx context.Context, in *ClientSecret, opts 
 	return out, nil
 }
 
-func (c *keeperClient) StoreMeta(ctx context.Context, in *StoreMetaRequest, opts ...grpc.CallOption) (*ClientMeta, error) {
-	out := new(ClientMeta)
+func (c *keeperClient) StoreMeta(ctx context.Context, in *StoreMetaRequest, opts ...grpc.CallOption) (*StoredMeta, error) {
+	out := new(StoredMeta)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/StoreMeta", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -199,7 +199,7 @@ func (c *keeperClient) StoreMeta(ctx context.Context, in *StoreMetaRequest, opts
 	return out, nil
 }
 
-func (c *keeperClient) UpdateMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *keeperClient) UpdateMeta(ctx context.Context, in *StoredMeta, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/UpdateMeta", in, out, opts...)
 	if err != nil {
@@ -208,7 +208,7 @@ func (c *keeperClient) UpdateMeta(ctx context.Context, in *ClientMeta, opts ...g
 	return out, nil
 }
 
-func (c *keeperClient) DeleteMeta(ctx context.Context, in *ClientMeta, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *keeperClient) DeleteMeta(ctx context.Context, in *StoredMeta, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/DeleteMeta", in, out, opts...)
 	if err != nil {
@@ -217,8 +217,8 @@ func (c *keeperClient) DeleteMeta(ctx context.Context, in *ClientMeta, opts ...g
 	return out, nil
 }
 
-func (c *keeperClient) GetSecrets(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecrets, error) {
-	out := new(ClientSecrets)
+func (c *keeperClient) GetSecrets(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*StoredSecrets, error) {
+	out := new(StoredSecrets)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/GetSecrets", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -226,8 +226,8 @@ func (c *keeperClient) GetSecrets(ctx context.Context, in *empty.Empty, opts ...
 	return out, nil
 }
 
-func (c *keeperClient) GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ClientSecret, error) {
-	out := new(ClientSecret)
+func (c *keeperClient) GetEncryptedKey(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*StoredSecret, error) {
+	out := new(StoredSecret)
 	err := c.cc.Invoke(ctx, "/gokeeper.Keeper/GetEncryptedKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -239,14 +239,14 @@ func (c *keeperClient) GetEncryptedKey(ctx context.Context, in *empty.Empty, opt
 // All implementations must embed UnimplementedKeeperServer
 // for forward compatibility
 type KeeperServer interface {
-	StoreSecret(context.Context, *Secret) (*ClientSecret, error)
-	UpdateSecret(context.Context, *ClientSecret) (*empty.Empty, error)
-	DeleteSecret(context.Context, *ClientSecret) (*empty.Empty, error)
-	StoreMeta(context.Context, *StoreMetaRequest) (*ClientMeta, error)
-	UpdateMeta(context.Context, *ClientMeta) (*empty.Empty, error)
-	DeleteMeta(context.Context, *ClientMeta) (*empty.Empty, error)
-	GetSecrets(context.Context, *empty.Empty) (*ClientSecrets, error)
-	GetEncryptedKey(context.Context, *empty.Empty) (*ClientSecret, error)
+	StoreSecret(context.Context, *Secret) (*StoredSecret, error)
+	UpdateSecret(context.Context, *StoredSecret) (*empty.Empty, error)
+	DeleteSecret(context.Context, *StoredSecret) (*empty.Empty, error)
+	StoreMeta(context.Context, *StoreMetaRequest) (*StoredMeta, error)
+	UpdateMeta(context.Context, *StoredMeta) (*empty.Empty, error)
+	DeleteMeta(context.Context, *StoredMeta) (*empty.Empty, error)
+	GetSecrets(context.Context, *empty.Empty) (*StoredSecrets, error)
+	GetEncryptedKey(context.Context, *empty.Empty) (*StoredSecret, error)
 	mustEmbedUnimplementedKeeperServer()
 }
 
@@ -254,28 +254,28 @@ type KeeperServer interface {
 type UnimplementedKeeperServer struct {
 }
 
-func (UnimplementedKeeperServer) StoreSecret(context.Context, *Secret) (*ClientSecret, error) {
+func (UnimplementedKeeperServer) StoreSecret(context.Context, *Secret) (*StoredSecret, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreSecret not implemented")
 }
-func (UnimplementedKeeperServer) UpdateSecret(context.Context, *ClientSecret) (*empty.Empty, error) {
+func (UnimplementedKeeperServer) UpdateSecret(context.Context, *StoredSecret) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSecret not implemented")
 }
-func (UnimplementedKeeperServer) DeleteSecret(context.Context, *ClientSecret) (*empty.Empty, error) {
+func (UnimplementedKeeperServer) DeleteSecret(context.Context, *StoredSecret) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSecret not implemented")
 }
-func (UnimplementedKeeperServer) StoreMeta(context.Context, *StoreMetaRequest) (*ClientMeta, error) {
+func (UnimplementedKeeperServer) StoreMeta(context.Context, *StoreMetaRequest) (*StoredMeta, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreMeta not implemented")
 }
-func (UnimplementedKeeperServer) UpdateMeta(context.Context, *ClientMeta) (*empty.Empty, error) {
+func (UnimplementedKeeperServer) UpdateMeta(context.Context, *StoredMeta) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMeta not implemented")
 }
-func (UnimplementedKeeperServer) DeleteMeta(context.Context, *ClientMeta) (*empty.Empty, error) {
+func (UnimplementedKeeperServer) DeleteMeta(context.Context, *StoredMeta) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMeta not implemented")
 }
-func (UnimplementedKeeperServer) GetSecrets(context.Context, *empty.Empty) (*ClientSecrets, error) {
+func (UnimplementedKeeperServer) GetSecrets(context.Context, *empty.Empty) (*StoredSecrets, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSecrets not implemented")
 }
-func (UnimplementedKeeperServer) GetEncryptedKey(context.Context, *empty.Empty) (*ClientSecret, error) {
+func (UnimplementedKeeperServer) GetEncryptedKey(context.Context, *empty.Empty) (*StoredSecret, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEncryptedKey not implemented")
 }
 func (UnimplementedKeeperServer) mustEmbedUnimplementedKeeperServer() {}
@@ -310,7 +310,7 @@ func _Keeper_StoreSecret_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Keeper_UpdateSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientSecret)
+	in := new(StoredSecret)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -322,13 +322,13 @@ func _Keeper_UpdateSecret_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/gokeeper.Keeper/UpdateSecret",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).UpdateSecret(ctx, req.(*ClientSecret))
+		return srv.(KeeperServer).UpdateSecret(ctx, req.(*StoredSecret))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Keeper_DeleteSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientSecret)
+	in := new(StoredSecret)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -340,7 +340,7 @@ func _Keeper_DeleteSecret_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/gokeeper.Keeper/DeleteSecret",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).DeleteSecret(ctx, req.(*ClientSecret))
+		return srv.(KeeperServer).DeleteSecret(ctx, req.(*StoredSecret))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -364,7 +364,7 @@ func _Keeper_StoreMeta_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _Keeper_UpdateMeta_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientMeta)
+	in := new(StoredMeta)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -376,13 +376,13 @@ func _Keeper_UpdateMeta_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/gokeeper.Keeper/UpdateMeta",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).UpdateMeta(ctx, req.(*ClientMeta))
+		return srv.(KeeperServer).UpdateMeta(ctx, req.(*StoredMeta))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Keeper_DeleteMeta_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientMeta)
+	in := new(StoredMeta)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -394,7 +394,7 @@ func _Keeper_DeleteMeta_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/gokeeper.Keeper/DeleteMeta",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServer).DeleteMeta(ctx, req.(*ClientMeta))
+		return srv.(KeeperServer).DeleteMeta(ctx, req.(*StoredMeta))
 	}
 	return interceptor(ctx, in, info, handler)
 }

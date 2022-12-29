@@ -45,7 +45,7 @@ func deleteRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	if _, err = rpcClient.Keeper.DeleteMeta(ctx, &pb.ClientMeta{Id: metaID}); err != nil {
+	if _, err = rpcClient.Keeper.DeleteMeta(ctx, &pb.StoredMeta{Id: metaID}); err != nil {
 		log.Errorf("failed to delete meta: %s", err)
 	}
 }

@@ -105,24 +105,24 @@ func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
 	return nil
 }
 
-// GetSecrets returns client' secrets.
-func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error) {
+// GetSecrets returns user' secrets.
+func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb.StoredSecrets, err error) {
 	ss, err := a.store.GetSecrets(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call GetSecrets from gRPC store adapter: %s", err)
 	}
 
-	return toClientSecretsGRPC(ss), nil
+	return toStoredSecretsGRPC(ss), nil
 }
 
-// GetEncryptedKey returns client's encrypted key.
-func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.ClientSecret, err error) {
+// GetEncryptedKey returns user's encrypted key.
+func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.StoredSecret, err error) {
 	k, err := a.store.GetEncryptedKey(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to call GetEncryptedKey from gRPC store adapter: %s", err)
 	}
 
-	return toClientSecretGRPC(k), nil
+	return toStoredSecretGRPC(k), nil
 }
 
 // IsUserSecret checks whether secret belongs to user.
@@ -163,8 +163,8 @@ func fromMetaGRPC(meta *pb.Meta) Meta {
 	return Meta(meta.GetText())
 }
 
-func toClientSecretGRPC(secret ClientSecret) (pbSecret *pb.ClientSecret) {
-	return &pb.ClientSecret{
+func toStoredSecretGRPC(secret StoredSecret) (pbSecret *pb.StoredSecret) {
+	return &pb.StoredSecret{
 		Secret: &pb.Secret{
 			Data: secret.Secret.Data,
 			Kind: pb.SecretKind(secret.Secret.Kind),
@@ -173,8 +173,8 @@ func toClientSecretGRPC(secret ClientSecret) (pbSecret *pb.ClientSecret) {
 	}
 }
 
-func toClientMetaGRPC(meta ClientMeta) (pbMeta *pb.ClientMeta) {
-	return &pb.ClientMeta{
+func toStoredMetaGRPC(meta StoredMeta) (pbMeta *pb.StoredMeta) {
+	return &pb.StoredMeta{
 		Meta: &pb.Meta{
 			Text: string(meta.Meta),
 		},
@@ -182,23 +182,23 @@ func toClientMetaGRPC(meta ClientMeta) (pbMeta *pb.ClientMeta) {
 	}
 }
 
-func toClientMetasGRPC(metas []ClientMeta) (pbMetas []*pb.ClientMeta) {
-	pbMetas = make([]*pb.ClientMeta, len(metas))
+func toStoredMetasGRPC(metas []StoredMeta) (pbMetas []*pb.StoredMeta) {
+	pbMetas = make([]*pb.StoredMeta, len(metas))
 
 	for i, m := range metas {
-		pbMetas[i] = toClientMetaGRPC(m)
+		pbMetas[i] = toStoredMetaGRPC(m)
 	}
 
 	return pbMetas
 }
 
-func toClientSecretsGRPC(secrets []ClientSecret) (pbSecrets *pb.ClientSecrets) {
-	pbSecrets = &pb.ClientSecrets{}
+func toStoredSecretsGRPC(secrets []StoredSecret) (pbSecrets *pb.StoredSecrets) {
+	pbSecrets = &pb.StoredSecrets{}
 
-	pbSecrets.Secrets = make([]*pb.ClientSecret, len(secrets))
+	pbSecrets.Secrets = make([]*pb.StoredSecret, len(secrets))
 	for i, s := range secrets {
-		pbSecrets.Secrets[i] = toClientSecretGRPC(s)
-		pbSecrets.Secrets[i].Meta = toClientMetasGRPC(s.Meta)
+		pbSecrets.Secrets[i] = toStoredSecretGRPC(s)
+		pbSecrets.Secrets[i].Meta = toStoredMetasGRPC(s.Meta)
 	}
 
 	return pbSecrets

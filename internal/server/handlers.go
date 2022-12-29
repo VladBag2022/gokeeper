@@ -10,7 +10,7 @@ import (
 )
 
 // StoreSecret stores provided secret and returns new ID.
-func (s *KeeperServer) StoreSecret(ctx context.Context, secret *pb.Secret) (*pb.ClientSecret, error) {
+func (s *KeeperServer) StoreSecret(ctx context.Context, secret *pb.Secret) (*pb.StoredSecret, error) {
 	userID, err := userIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -21,14 +21,14 @@ func (s *KeeperServer) StoreSecret(ctx context.Context, secret *pb.Secret) (*pb.
 		return nil, fmt.Errorf("failed to store secret: %s", err)
 	}
 
-	return &pb.ClientSecret{
+	return &pb.StoredSecret{
 		Id:     secretID,
 		Secret: secret,
 	}, nil
 }
 
 // UpdateSecret checks user permissions and updates secret by ID.
-func (s *KeeperServer) UpdateSecret(ctx context.Context, secret *pb.ClientSecret) (*empty.Empty, error) {
+func (s *KeeperServer) UpdateSecret(ctx context.Context, secret *pb.StoredSecret) (*empty.Empty, error) {
 	if err := s.permitSecretID(ctx, secret.GetId()); err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (s *KeeperServer) UpdateSecret(ctx context.Context, secret *pb.ClientSecret
 }
 
 // DeleteSecret checks user permissions and deletes secret by ID.
-func (s *KeeperServer) DeleteSecret(ctx context.Context, secret *pb.ClientSecret) (*empty.Empty, error) {
+func (s *KeeperServer) DeleteSecret(ctx context.Context, secret *pb.StoredSecret) (*empty.Empty, error) {
 	if err := s.permitSecretID(ctx, secret.GetId()); err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (s *KeeperServer) DeleteSecret(ctx context.Context, secret *pb.ClientSecret
 }
 
 // StoreMeta stores provided meta and returns new ID.
-func (s *KeeperServer) StoreMeta(ctx context.Context, req *pb.StoreMetaRequest) (*pb.ClientMeta, error) {
+func (s *KeeperServer) StoreMeta(ctx context.Context, req *pb.StoreMetaRequest) (*pb.StoredMeta, error) {
 	if err := s.permitSecretID(ctx, req.GetSecretId()); err != nil {
 		return nil, err
 	}
@@ -64,14 +64,14 @@ func (s *KeeperServer) StoreMeta(ctx context.Context, req *pb.StoreMetaRequest) 
 		return nil, fmt.Errorf("failed to store meta: %s", err)
 	}
 
-	return &pb.ClientMeta{
+	return &pb.StoredMeta{
 		Id:   metaID,
 		Meta: req.GetMeta(),
 	}, nil
 }
 
 // UpdateMeta checks user permissions and updates meta by ID.
-func (s *KeeperServer) UpdateMeta(ctx context.Context, meta *pb.ClientMeta) (*empty.Empty, error) {
+func (s *KeeperServer) UpdateMeta(ctx context.Context, meta *pb.StoredMeta) (*empty.Empty, error) {
 	if err := s.permitMetaID(ctx, meta.GetId()); err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (s *KeeperServer) UpdateMeta(ctx context.Context, meta *pb.ClientMeta) (*em
 }
 
 // DeleteMeta checks user permissions and deletes meta by ID.
-func (s *KeeperServer) DeleteMeta(ctx context.Context, meta *pb.ClientMeta) (*empty.Empty, error) {
+func (s *KeeperServer) DeleteMeta(ctx context.Context, meta *pb.StoredMeta) (*empty.Empty, error) {
 	if err := s.permitMetaID(ctx, meta.GetId()); err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (s *KeeperServer) DeleteMeta(ctx context.Context, meta *pb.ClientMeta) (*em
 }
 
 // GetSecrets returns user' secrets if any.
-func (s *KeeperServer) GetSecrets(ctx context.Context, _ *empty.Empty) (*pb.ClientSecrets, error) {
+func (s *KeeperServer) GetSecrets(ctx context.Context, _ *empty.Empty) (*pb.StoredSecrets, error) {
 	userID, err := userIDFromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (s *KeeperServer) GetSecrets(ctx context.Context, _ *empty.Empty) (*pb.Clie
 }
 
 // GetEncryptedKey returns user's encrypted key if any.
-func (s *KeeperServer) GetEncryptedKey(ctx context.Context, _ *empty.Empty) (*pb.ClientSecret, error) {
+func (s *KeeperServer) GetEncryptedKey(ctx context.Context, _ *empty.Empty) (*pb.StoredSecret, error) {
 	userID, err := userIDFromContext(ctx)
 	if err != nil {
 		return nil, err

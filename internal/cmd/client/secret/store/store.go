@@ -12,7 +12,7 @@ import (
 
 	"github.com/VladBag2022/gokeeper/internal/client"
 	"github.com/VladBag2022/gokeeper/internal/cmd"
-	"github.com/VladBag2022/gokeeper/internal/proto"
+	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
 // Cmd is the primary command - "store".
@@ -29,7 +29,7 @@ func init() {
 }
 
 // Secret stores provided secret on remote server with the help of gRPC.
-func Secret(secret *proto.Secret) {
+func Secret(secret *pb.Secret) {
 	ctx := context.Background()
 
 	rpcClient, err := cmd.NewGRPCClient()
@@ -37,7 +37,7 @@ func Secret(secret *proto.Secret) {
 		return
 	}
 
-	if secret.GetKind() != proto.SecretKind_SECRET_ENCRYPTED_KEY {
+	if secret.GetKind() != pb.SecretKind_SECRET_ENCRYPTED_KEY {
 		key, gErr := rpcClient.Keeper.GetEncryptedKey(ctx, &empty.Empty{})
 		if gErr != nil {
 			log.Errorf("failed to get encrypted key: %s", gErr)
@@ -57,7 +57,7 @@ func Secret(secret *proto.Secret) {
 
 	secretID := viper.GetInt64("id")
 	if secretID > 0 {
-		_, err = rpcClient.Keeper.UpdateSecret(ctx, &proto.ClientSecret{
+		_, err = rpcClient.Keeper.UpdateSecret(ctx, &pb.StoredSecret{
 			Secret: secret,
 			Id:     secretID,
 		})
@@ -67,10 +67,10 @@ func Secret(secret *proto.Secret) {
 		return
 	}
 
-	clientSecret, err := rpcClient.Keeper.StoreSecret(ctx, secret)
+	storedSecret, err := rpcClient.Keeper.StoreSecret(ctx, secret)
 	if err != nil {
 		log.Errorf("failed to store secret: %s", err)
 		return
 	}
-	fmt.Printf("Secret ID: %d\n", clientSecret.GetId())
+	fmt.Printf("Secret ID: %d\n", storedSecret.GetId())
 }

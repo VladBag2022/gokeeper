@@ -43,15 +43,15 @@ func (_m *GRPCStore) DeleteSecret(ctx context.Context, id int64) error {
 }
 
 // GetEncryptedKey provides a mock function with given fields: ctx, userID
-func (_m *GRPCStore) GetEncryptedKey(ctx context.Context, userID int64) (*proto.ClientSecret, error) {
+func (_m *GRPCStore) GetEncryptedKey(ctx context.Context, userID int64) (*proto.StoredSecret, error) {
 	ret := _m.Called(ctx, userID)
 
-	var r0 *proto.ClientSecret
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *proto.ClientSecret); ok {
+	var r0 *proto.StoredSecret
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *proto.StoredSecret); ok {
 		r0 = rf(ctx, userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*proto.ClientSecret)
+			r0 = ret.Get(0).(*proto.StoredSecret)
 		}
 	}
 
@@ -66,15 +66,15 @@ func (_m *GRPCStore) GetEncryptedKey(ctx context.Context, userID int64) (*proto.
 }
 
 // GetSecrets provides a mock function with given fields: ctx, userID
-func (_m *GRPCStore) GetSecrets(ctx context.Context, userID int64) (*proto.ClientSecrets, error) {
+func (_m *GRPCStore) GetSecrets(ctx context.Context, userID int64) (*proto.StoredSecrets, error) {
 	ret := _m.Called(ctx, userID)
 
-	var r0 *proto.ClientSecrets
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *proto.ClientSecrets); ok {
+	var r0 *proto.StoredSecrets
+	if rf, ok := ret.Get(0).(func(context.Context, int64) *proto.StoredSecrets); ok {
 		r0 = rf(ctx, userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*proto.ClientSecrets)
+			r0 = ret.Get(0).(*proto.StoredSecrets)
 		}
 	}
 

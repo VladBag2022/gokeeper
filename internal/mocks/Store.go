@@ -43,14 +43,14 @@ func (_m *Store) DeleteSecret(ctx context.Context, id int64) error {
 }
 
 // GetEncryptedKey provides a mock function with given fields: ctx, userID
-func (_m *Store) GetEncryptedKey(ctx context.Context, userID int64) (store.ClientSecret, error) {
+func (_m *Store) GetEncryptedKey(ctx context.Context, userID int64) (store.StoredSecret, error) {
 	ret := _m.Called(ctx, userID)
 
-	var r0 store.ClientSecret
-	if rf, ok := ret.Get(0).(func(context.Context, int64) store.ClientSecret); ok {
+	var r0 store.StoredSecret
+	if rf, ok := ret.Get(0).(func(context.Context, int64) store.StoredSecret); ok {
 		r0 = rf(ctx, userID)
 	} else {
-		r0 = ret.Get(0).(store.ClientSecret)
+		r0 = ret.Get(0).(store.StoredSecret)
 	}
 
 	var r1 error
@@ -64,15 +64,15 @@ func (_m *Store) GetEncryptedKey(ctx context.Context, userID int64) (store.Clien
 }
 
 // GetSecrets provides a mock function with given fields: ctx, userID
-func (_m *Store) GetSecrets(ctx context.Context, userID int64) ([]store.ClientSecret, error) {
+func (_m *Store) GetSecrets(ctx context.Context, userID int64) ([]store.StoredSecret, error) {
 	ret := _m.Called(ctx, userID)
 
-	var r0 []store.ClientSecret
-	if rf, ok := ret.Get(0).(func(context.Context, int64) []store.ClientSecret); ok {
+	var r0 []store.StoredSecret
+	if rf, ok := ret.Get(0).(func(context.Context, int64) []store.StoredSecret); ok {
 		r0 = rf(ctx, userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]store.ClientSecret)
+			r0 = ret.Get(0).([]store.StoredSecret)
 		}
 	}
 

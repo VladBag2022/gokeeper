@@ -23,16 +23,16 @@ type Secret struct {
 // Meta represents ant text meta information.
 type Meta string
 
-// ClientMeta consists of Meta and its store ID.
-type ClientMeta struct {
+// StoredMeta consists of Meta and its store ID.
+type StoredMeta struct {
 	Meta Meta
 	ID   int64
 }
 
-// ClientSecret consists of Secret, bounded Meta and its store ID.
-type ClientSecret struct {
+// StoredSecret consists of Secret, bounded Meta and its store ID.
+type StoredSecret struct {
 	Secret Secret
-	Meta   []ClientMeta
+	Meta   []StoredMeta
 	ID     int64
 }
 
@@ -65,11 +65,11 @@ type Store interface {
 	// DeleteMeta deletes meta by its ID.
 	DeleteMeta(ctx context.Context, id int64) error
 
-	// GetSecrets returns client' secrets.
-	GetSecrets(ctx context.Context, userID int64) (secrets []ClientSecret, err error)
+	// GetSecrets returns user' secrets.
+	GetSecrets(ctx context.Context, userID int64) (secrets []StoredSecret, err error)
 
-	// GetEncryptedKey returns client's encrypted key.
-	GetEncryptedKey(ctx context.Context, userID int64) (secret ClientSecret, err error)
+	// GetEncryptedKey returns user's encrypted key.
+	GetEncryptedKey(ctx context.Context, userID int64) (secret StoredSecret, err error)
 
 	// IsUserSecret checks whether secret belongs to user.
 	IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error)

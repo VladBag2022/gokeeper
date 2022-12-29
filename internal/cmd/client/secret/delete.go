@@ -45,7 +45,7 @@ func deleteRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	if _, err = rpcClient.Keeper.DeleteSecret(ctx, &pb.ClientSecret{Id: secretID}); err != nil {
+	if _, err = rpcClient.Keeper.DeleteSecret(ctx, &pb.StoredSecret{Id: secretID}); err != nil {
 		log.Errorf("failed to delete secret: %s", err)
 	}
 }

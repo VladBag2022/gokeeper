@@ -35,11 +35,11 @@ type GRPCStore interface {
 	// DeleteMeta deletes meta by its ID.
 	DeleteMeta(ctx context.Context, id int64) error
 
-	// GetSecrets returns client' secrets.
-	GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error)
+	// GetSecrets returns user' secrets.
+	GetSecrets(ctx context.Context, userID int64) (secrets *pb.StoredSecrets, err error)
 
-	// GetEncryptedKey returns client's encrypted key.
-	GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.ClientSecret, err error)
+	// GetEncryptedKey returns user's encrypted key.
+	GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.StoredSecret, err error)
 
 	// IsUserSecret checks whether secret belongs to user.
 	IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error)

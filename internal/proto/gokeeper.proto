@@ -49,19 +49,19 @@ message Secret {
   SecretKind kind = 2;
 }
 
-message ClientMeta {
+message StoredMeta {
   Meta meta = 1;
   int64 id = 2;
 }
 
-message ClientSecret {
+message StoredSecret {
   Secret secret = 1;
-  repeated ClientMeta meta = 2;
+  repeated StoredMeta meta = 2;
   int64 id = 3;
 }
 
-message ClientSecrets {
-  repeated ClientSecret secrets = 1;
+message StoredSecrets {
+  repeated StoredSecret secrets = 1;
 }
 
 message JWT {
@@ -74,15 +74,15 @@ service Auth {
 }
 
 service Keeper {
-  rpc StoreSecret(Secret) returns (ClientSecret);
-  rpc UpdateSecret(ClientSecret) returns (google.protobuf.Empty);
-  rpc DeleteSecret(ClientSecret) returns (google.protobuf.Empty);
+  rpc StoreSecret(Secret) returns (StoredSecret);
+  rpc UpdateSecret(StoredSecret) returns (google.protobuf.Empty);
+  rpc DeleteSecret(StoredSecret) returns (google.protobuf.Empty);
 
-  rpc StoreMeta(StoreMetaRequest) returns (ClientMeta);
-  rpc UpdateMeta(ClientMeta) returns (google.protobuf.Empty);
-  rpc DeleteMeta(ClientMeta) returns (google.protobuf.Empty);
+  rpc StoreMeta(StoreMetaRequest) returns (StoredMeta);
+  rpc UpdateMeta(StoredMeta) returns (google.protobuf.Empty);
+  rpc DeleteMeta(StoredMeta) returns (google.protobuf.Empty);
 
-  rpc GetSecrets(google.protobuf.Empty) returns (ClientSecrets);
+  rpc GetSecrets(google.protobuf.Empty) returns (StoredSecrets);
   
-  rpc GetEncryptedKey(google.protobuf.Empty) returns (ClientSecret);
+  rpc GetEncryptedKey(google.protobuf.Empty) returns (StoredSecret);
 }

@@ -45,7 +45,7 @@ func storeRun(_ *cobra.Command, args []string) {
 	metaID := viper.GetInt64("meta")
 	secretID := viper.GetInt64("secret")
 	if metaID > 0 {
-		_, err = rpcClient.Keeper.UpdateMeta(ctx, &pb.ClientMeta{
+		_, err = rpcClient.Keeper.UpdateMeta(ctx, &pb.StoredMeta{
 			Meta: meta,
 			Id:   metaID,
 		})
@@ -55,7 +55,7 @@ func storeRun(_ *cobra.Command, args []string) {
 		return
 	}
 
-	clientMeta, err := rpcClient.Keeper.StoreMeta(ctx, &pb.StoreMetaRequest{
+	storedMeta, err := rpcClient.Keeper.StoreMeta(ctx, &pb.StoreMetaRequest{
 		Meta:     meta,
 		SecretId: secretID,
 	})
@@ -63,5 +63,5 @@ func storeRun(_ *cobra.Command, args []string) {
 		log.Errorf("failed to store meta: %s", err)
 		return
 	}
-	fmt.Printf("Meta ID: %d\n", clientMeta.GetId())
+	fmt.Printf("Meta ID: %d\n", storedMeta.GetId())
 }

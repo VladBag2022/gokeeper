@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/georgysavva/scany/sqlscan"
-
 	_ "github.com/jackc/pgx/v4/stdlib" // use pgx
 	"github.com/jmoiron/sqlx"
 
@@ -189,8 +188,8 @@ func (p *PostgresStore) DeleteMeta(ctx context.Context, id int64) error {
 	return nil
 }
 
-// GetSecrets returns client' secrets.
-func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets []ClientSecret, err error) {
+// GetSecrets returns user' secrets.
+func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets []StoredSecret, err error) {
 	rows, err := p.database.QueryContext(ctx,
 		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind != $2",
 		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
@@ -200,7 +199,7 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets [
 	defer rows.Close()
 
 	for rows.Next() {
-		var secret ClientSecret
+		var secret StoredSecret
 
 		err = rows.Scan(&secret.ID, &secret.Secret.Data, &secret.Secret.Kind)
 		if err != nil {
@@ -223,8 +222,8 @@ func (p *PostgresStore) GetSecrets(ctx context.Context, userID int64) (secrets [
 	return secrets, nil
 }
 
-// GetEncryptedKey returns client's encrypted key.
-func (p *PostgresStore) GetEncryptedKey(ctx context.Context, userID int64) (secret ClientSecret, err error) {
+// GetEncryptedKey returns user's encrypted key.
+func (p *PostgresStore) GetEncryptedKey(ctx context.Context, userID int64) (secret StoredSecret, err error) {
 	row := p.database.QueryRowContext(ctx,
 		"SELECT id, data, kind FROM secrets WHERE user_id = $1 AND kind = $2 LIMIT 1",
 		userID, pb.SecretKind_SECRET_ENCRYPTED_KEY)
@@ -269,7 +268,7 @@ func (p *PostgresStore) IsUserMeta(ctx context.Context, userID, metaID int64) (b
 	return count > 0, nil
 }
 
-func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta []ClientMeta, err error) {
+func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta []StoredMeta, err error) {
 	rows, err := p.database.QueryContext(ctx, "SELECT id, text FROM meta WHERE secret_id = $1", secretID)
 	if err != nil {
 		return meta, fmt.Errorf("failed to query secret' meta: %s", err)
@@ -277,7 +276,7 @@ func (p *PostgresStore) getSecretMeta(ctx context.Context, secretID int64) (meta
 	defer rows.Close()
 
 	for rows.Next() {
-		var m ClientMeta
+		var m StoredMeta
 
 		err = rows.Scan(&m.ID, &m.Meta)
 		if err != nil {
