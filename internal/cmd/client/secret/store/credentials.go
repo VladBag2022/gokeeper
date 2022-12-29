@@ -28,6 +28,7 @@ func credentialsRun(_ *cobra.Command, args []string) {
 	})
 	if err != nil {
 		log.Errorf("failed to marshal credentials: %s", err)
+
 		return
 	}
 

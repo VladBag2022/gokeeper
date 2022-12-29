@@ -23,6 +23,7 @@ var deleteCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to parse meta ID: %s", err)
 		}
+
 		return nil
 	},
 	Run: deleteRun,

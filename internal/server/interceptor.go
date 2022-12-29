@@ -41,11 +41,14 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		log.Infof("call %s", info.FullMethod)
+
 		userID, err := i.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
+
 		ctx = metadata.NewIncomingContext(ctx, metadata.Pairs(UserIDKey, strconv.FormatInt(userID, 10)))
+
 		return handler(ctx, req)
 	}
 }

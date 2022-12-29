@@ -34,12 +34,14 @@ func rootRun(_ *cobra.Command, _ []string) {
 	listener, err := net.Listen("tcp", viper.GetString("ListenAddress"))
 	if err != nil {
 		log.Errorf("failed to listen: %s", err)
+
 		return
 	}
 
 	jwtKey, err := crypt.GenerateRandomBytes(32)
 	if err != nil {
 		log.Errorf("failed to generate random JWT key: %s", err)
+
 		return
 	}
 
@@ -48,6 +50,7 @@ func rootRun(_ *cobra.Command, _ []string) {
 	postgresStore, err := store.NewPostgresStore(ctx, viper.GetString("DatabaseDSN"))
 	if err != nil {
 		log.Errorf("failed to connect to Postgres store: %s", err)
+
 		return
 	}
 

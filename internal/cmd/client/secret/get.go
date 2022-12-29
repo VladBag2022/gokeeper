@@ -35,6 +35,7 @@ func getRun(_ *cobra.Command, _ []string) {
 	key, err := rpcClient.Keeper.GetEncryptedKey(ctx, &empty.Empty{})
 	if err != nil {
 		log.Errorf("failed to get encrypted key: %s", err)
+
 		return
 	}
 
@@ -43,12 +44,14 @@ func getRun(_ *cobra.Command, _ []string) {
 		viper.GetString("SessionKey"))
 	if err != nil {
 		log.Errorf("failed to create session manager: %s", err)
+
 		return
 	}
 
 	secrets, err := rpcClient.Keeper.GetSecrets(ctx, &empty.Empty{})
 	if err != nil {
 		log.Errorf("failed to get secrets: %s", err)
+
 		return
 	}
 

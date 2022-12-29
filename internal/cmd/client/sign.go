@@ -49,12 +49,14 @@ func signRun(_ *cobra.Command, _ []string) {
 	prompt := &survey.Password{Message: "Password"}
 	if err = survey.AskOne(prompt, &credentials.Password); err != nil {
 		log.Errorf("failed to prompt password: %s", err)
+
 		return
 	}
 
 	sessionManager, err := client.NewSessionManagerFromPassword(credentials.GetPassword())
 	if err != nil {
 		log.Errorf("failed to create session manager: %s", err)
+
 		return
 	}
 
@@ -63,12 +65,14 @@ func signRun(_ *cobra.Command, _ []string) {
 		jwt, err = rpcClient.Auth.SignUp(ctx, credentials)
 		if err != nil {
 			log.Errorf("failed to sign up: %s", err)
+
 			return
 		}
 	} else {
 		jwt, err = rpcClient.Auth.SignIn(ctx, credentials)
 		if err != nil {
 			log.Errorf("failed to sign in: %s", err)
+			
 			return
 		}
 	}

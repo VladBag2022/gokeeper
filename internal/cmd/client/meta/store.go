@@ -52,6 +52,7 @@ func storeRun(_ *cobra.Command, args []string) {
 		if err != nil {
 			log.Errorf("failed to update meta: %s", err)
 		}
+
 		return
 	}
 
@@ -61,6 +62,7 @@ func storeRun(_ *cobra.Command, args []string) {
 	})
 	if err != nil {
 		log.Errorf("failed to store meta: %s", err)
+
 		return
 	}
 	fmt.Printf("Meta ID: %d\n", storedMeta.GetId())

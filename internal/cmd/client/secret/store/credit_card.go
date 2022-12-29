@@ -28,18 +28,21 @@ func creditCardRun(_ *cobra.Command, args []string) {
 	month, err := strconv.ParseInt(args[1], 10, 32)
 	if err != nil {
 		log.Errorf("failed to parse month: %s", err)
+
 		return
 	}
 
 	year, err := strconv.ParseInt(args[2], 10, 32)
 	if err != nil {
 		log.Errorf("failed to parse year: %s", err)
+
 		return
 	}
 
 	cvv, err := strconv.ParseInt(args[3], 10, 32)
 	if err != nil {
 		log.Errorf("failed to parse CVV: %s", err)
+
 		return
 	}
 
@@ -52,6 +55,7 @@ func creditCardRun(_ *cobra.Command, args []string) {
 	})
 	if err != nil {
 		log.Errorf("failed to marshal credit card: %s", err)
+
 		return
 	}
 

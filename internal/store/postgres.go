@@ -29,6 +29,7 @@ func NewPostgresStore(
 	p := &PostgresStore{
 		database: database,
 	}
+
 	return p, p.createSchema(ctx)
 }
 

@@ -41,6 +41,7 @@ func Secret(secret *pb.Secret) {
 		key, gErr := rpcClient.Keeper.GetEncryptedKey(ctx, &empty.Empty{})
 		if gErr != nil {
 			log.Errorf("failed to get encrypted key: %s", gErr)
+
 			return
 		}
 
@@ -49,6 +50,7 @@ func Secret(secret *pb.Secret) {
 			viper.GetString("SessionKey"))
 		if sErr != nil {
 			log.Errorf("failed to create session manager: %s", sErr)
+
 			return
 		}
 
@@ -64,12 +66,14 @@ func Secret(secret *pb.Secret) {
 		if err != nil {
 			log.Errorf("failed to update secret: %s", err)
 		}
+
 		return
 	}
 
 	storedSecret, err := rpcClient.Keeper.StoreSecret(ctx, secret)
 	if err != nil {
 		log.Errorf("failed to store secret: %s", err)
+
 		return
 	}
 	fmt.Printf("Secret ID: %d\n", storedSecret.GetId())
