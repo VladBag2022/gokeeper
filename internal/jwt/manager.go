@@ -36,7 +36,12 @@ func (m *Manager) Generate(userID int64) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(m.secretKey)
+	tokenString, err := token.SignedString(m.secretKey)
+	if err != nil {
+		return "", fmt.Errorf("failed to create signed string from token: %s", err)
+	}
+
+	return tokenString, nil
 }
 
 // Verify checks JWT validity and returns encapsulated UserClaims.

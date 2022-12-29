@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -54,8 +55,7 @@ func NewGRPCClient() (*client.Client, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithUnaryInterceptor(authInterceptor.Unary()))
 	if err != nil {
-		log.Errorf("failed to dial server: %s", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to dial server: %s", err)
 	}
 
 	return client.NewClient(clientConn), nil

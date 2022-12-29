@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha512"
+	"fmt"
 )
 
 // Coder is the AES GCM crypter/decryoter.
@@ -18,12 +19,12 @@ func NewCoder(key []byte) (*Coder, error) {
 
 	c, err := aes.NewCipher(hash[:aes.BlockSize*2])
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create AES cipher: %s", err)
 	}
 
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create GCM: %s", err)
 	}
 
 	return &Coder{
@@ -39,5 +40,10 @@ func (c *Coder) Encrypt(plain []byte) []byte {
 
 // Decrypt decrypts provided buffer.
 func (c *Coder) Decrypt(message []byte) ([]byte, error) {
-	return c.gcm.Open(nil, c.nonce, message, nil)
+	plain, err := c.gcm.Open(nil, c.nonce, message, nil)
+	if err != nil {
+		return plain, fmt.Errorf("failed to decrypt ciphertext: %s", err)
+	}
+
+	return plain, nil
 }

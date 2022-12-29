@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
@@ -20,83 +21,128 @@ func NewGRPCAdapter(store Store) *GRPCAdapter {
 
 // IsUsernameAvailable checks whether provided username is available.
 func (a *GRPCAdapter) IsUsernameAvailable(ctx context.Context, username string) (available bool, err error) {
-	return a.store.IsUsernameAvailable(ctx, username)
+	available, err = a.store.IsUsernameAvailable(ctx, username)
+	if err != nil {
+		return available, fmt.Errorf("failed to call IsUsernameAvailable from gRPC store adapter: %s", err)
+	}
+
+	return available, nil
 }
 
 // SignIn returns user ID from provided credentials.
 func (a *GRPCAdapter) SignIn(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	return a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
+	id, err = a.store.SignIn(ctx, fromCredentialsGRPC(credentials))
+	if err != nil {
+		return 0, fmt.Errorf("failed to call SignIn from gRPC store adapter: %s", err)
+	}
+
+	return id, nil
 }
 
 // SignUp registers new user and returns his/her new ID.
 func (a *GRPCAdapter) SignUp(ctx context.Context, credentials *pb.Credentials) (id int64, err error) {
-	return a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
+	id, err = a.store.SignUp(ctx, fromCredentialsGRPC(credentials))
+	if err != nil {
+		return 0, fmt.Errorf("failed to call SignUp from gRPC store adapter: %s", err)
+	}
+
+	return id, nil
 }
 
 // StoreSecret stores user secret and returns its new ID.
 func (a *GRPCAdapter) StoreSecret(ctx context.Context, userID int64, secret *pb.Secret) (id int64, err error) {
-	return a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
+	id, err = a.store.StoreSecret(ctx, userID, fromSecretGRPC(secret))
+	if err != nil {
+		return 0, fmt.Errorf("failed to call StoreSecret from gRPC store adapter: %s", err)
+	}
+
+	return id, nil
 }
 
 // UpdateSecret updates secret by its ID.
 func (a *GRPCAdapter) UpdateSecret(ctx context.Context, id int64, secret *pb.Secret) error {
-	return a.store.UpdateSecret(ctx, id, fromSecretGRPC(secret))
+	if err := a.store.UpdateSecret(ctx, id, fromSecretGRPC(secret)); err != nil {
+		return fmt.Errorf("failed to call UpdateSecret from gRPC store adapter: %s", err)
+	}
+
+	return nil
 }
 
 // DeleteSecret deletes secret by its ID.
 func (a *GRPCAdapter) DeleteSecret(ctx context.Context, id int64) error {
-	return a.store.DeleteSecret(ctx, id)
+	if err := a.store.DeleteSecret(ctx, id); err != nil {
+		return fmt.Errorf("failed to call DeleteSecret from gRPC store adapter: %s", err)
+	}
+
+	return nil
 }
 
 // StoreMeta stores secret meta and returns ins new ID.
 func (a *GRPCAdapter) StoreMeta(ctx context.Context, secretID int64, meta *pb.Meta) (id int64, err error) {
-	return a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
+	id, err = a.store.StoreMeta(ctx, secretID, fromMetaGRPC(meta))
+	if err != nil {
+		return 0, fmt.Errorf("failed to call StoreMeta from gRPC store adapter: %s", err)
+	}
+
+	return id, nil
 }
 
 // UpdateMeta updates meta by its ID.
 func (a *GRPCAdapter) UpdateMeta(ctx context.Context, id int64, meta *pb.Meta) error {
-	return a.store.UpdateMeta(ctx, id, fromMetaGRPC(meta))
+	if err := a.store.UpdateMeta(ctx, id, fromMetaGRPC(meta)); err != nil {
+		return fmt.Errorf("failed to call UpdateMeta from gRPC store adapter: %s", err)
+	}
+
+	return nil
 }
 
 // DeleteMeta deletes meta by its ID.
 func (a *GRPCAdapter) DeleteMeta(ctx context.Context, id int64) error {
-	return a.store.DeleteMeta(ctx, id)
+	if err := a.store.DeleteMeta(ctx, id); err != nil {
+		return fmt.Errorf("failed to call DeleteMeta from gRPC store adapter: %s", err)
+	}
+
+	return nil
 }
 
 // GetSecrets returns client' secrets.
 func (a *GRPCAdapter) GetSecrets(ctx context.Context, userID int64) (secrets *pb.ClientSecrets, err error) {
-	secrets = &pb.ClientSecrets{}
-
 	ss, err := a.store.GetSecrets(ctx, userID)
 	if err != nil {
-		return secrets, err
+		return nil, fmt.Errorf("failed to call GetSecrets from gRPC store adapter: %s", err)
 	}
 
-	secrets = toClientSecretsGRPC(ss)
-	return secrets, err
+	return toClientSecretsGRPC(ss), nil
 }
 
 // GetEncryptedKey returns client's encrypted key.
 func (a *GRPCAdapter) GetEncryptedKey(ctx context.Context, userID int64) (secret *pb.ClientSecret, err error) {
-	secret = &pb.ClientSecret{}
-
 	k, err := a.store.GetEncryptedKey(ctx, userID)
 	if err != nil {
-		return secret, err
+		return nil, fmt.Errorf("failed to call GetEncryptedKey from gRPC store adapter: %s", err)
 	}
 
-	secret = toClientSecretGRPC(k)
-	return secret, err
+	return toClientSecretGRPC(k), nil
 }
 
 // IsUserSecret checks whether secret belongs to user.
 func (a *GRPCAdapter) IsUserSecret(ctx context.Context, userID, secretID int64) (userSecret bool, err error) {
-	return a.store.IsUserSecret(ctx, userID, secretID)
+	userSecret, err = a.store.IsUserSecret(ctx, userID, secretID)
+	if err != nil {
+		err = fmt.Errorf("failed to call IsUserSecret from gRPC store adapter: %s", err)
+	}
+
+	return userSecret, err
 }
 
 // IsUserMeta checks whether meta belongs to meta.
 func (a *GRPCAdapter) IsUserMeta(ctx context.Context, userID, metaID int64) (userMeta bool, err error) {
-	return a.store.IsUserMeta(ctx, userID, metaID)
+	userMeta, err = a.store.IsUserMeta(ctx, userID, metaID)
+	if err != nil {
+		err = fmt.Errorf("failed to call IsUserMeta from gRPC store adapter: %s", err)
+	}
+
+	return userMeta, err
 }
 
 func fromCredentialsGRPC(credentials *pb.Credentials) Credentials {
