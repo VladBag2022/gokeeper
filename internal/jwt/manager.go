@@ -18,7 +18,7 @@ type Manager struct {
 type UserClaims struct {
 	jwt.StandardClaims
 
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"userId"`
 }
 
 // NewManager creates new Manager from secret key and token duration.
