@@ -7,11 +7,11 @@ import (
 	common "github.com/VladBag2022/gokeeper/internal/cmd"
 )
 
-// Execute start GoKeeper client CLI.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+// Execute starts GoKeeper client CLI.
+func (c *CLI) Execute() {
+	if err := c.cmd.Execute(); err != nil {
 		log.Errorf("failed to execute root command: %s", err)
 	}
 
-	common.SaveConfigOnDemand(saveConfig, configFile, "./gokeeper.yaml")
+	common.SaveConfigOnDemand(c.saveConfig, c.configFile, "./gokeeper.yaml")
 }

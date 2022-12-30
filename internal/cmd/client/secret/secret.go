@@ -7,11 +7,13 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/cmd/client/secret/store"
 )
 
-// Cmd is the primary command - "secret".
-var Cmd = &cobra.Command{
-	Use: "secret",
-}
+// NewCLI returns secret CLI.
+func NewCLI() *cobra.Command {
+	cli := &cobra.Command{
+		Use: "secret",
+	}
 
-func init() {
-	Cmd.AddCommand(store.Cmd)
+	cli.AddCommand(newGetCLI(), store.NewCLI(), newDeleteCLI())
+
+	return cli
 }

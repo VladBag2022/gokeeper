@@ -15,13 +15,11 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var getCmd = &cobra.Command{
-	Use: "get",
-	Run: getRun,
-}
-
-func init() {
-	Cmd.AddCommand(getCmd)
+func newGetCLI() *cobra.Command {
+	return &cobra.Command{
+		Use: "get",
+		Run: getRun,
+	}
 }
 
 func getRun(_ *cobra.Command, _ []string) {

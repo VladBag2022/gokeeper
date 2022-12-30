@@ -11,17 +11,15 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var creditCardCmd = &cobra.Command{
-	Use:     "credit-card <number> <month> <year> <cvv> <username>",
-	Example: "credit-card 1234123412341234 10 2020 123 Owner",
-	Args: func(cmd *cobra.Command, args []string) error {
-		return cobra.MinimumNArgs(5)(cmd, args)
-	},
-	Run: creditCardRun,
-}
-
-func init() {
-	Cmd.AddCommand(creditCardCmd)
+func newCreditCardCLI() *cobra.Command {
+	return &cobra.Command{
+		Use:     "credit-card <number> <month> <year> <cvv> <username>",
+		Example: "credit-card 1234123412341234 10 2020 123 Owner",
+		Args: func(cmd *cobra.Command, args []string) error {
+			return cobra.MinimumNArgs(5)(cmd, args)
+		},
+		Run: creditCardRun,
+	}
 }
 
 func creditCardRun(_ *cobra.Command, args []string) {

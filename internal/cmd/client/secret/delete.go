@@ -12,25 +12,23 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var deleteCmd = &cobra.Command{
-	Use:     "delete <store_id>",
-	Example: "delete 1",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if err := cobra.ExactArgs(1)(cmd, args); err != nil {
-			return err
-		}
-		_, err := strconv.ParseInt(args[0], 10, 64)
-		if err != nil {
-			return fmt.Errorf("failed to parse secret ID: %w", err)
-		}
+func newDeleteCLI() *cobra.Command {
+	return &cobra.Command{
+		Use:     "delete <store_id>",
+		Example: "delete 1",
+		Args: func(cmd *cobra.Command, args []string) error {
+			if err := cobra.ExactArgs(1)(cmd, args); err != nil {
+				return err
+			}
+			_, err := strconv.ParseInt(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("failed to parse secret ID: %w", err)
+			}
 
-		return nil
-	},
-	Run: deleteRun,
-}
-
-func init() {
-	Cmd.AddCommand(deleteCmd)
+			return nil
+		},
+		Run: deleteRun,
+	}
 }
 
 func deleteRun(_ *cobra.Command, args []string) {

@@ -15,23 +15,25 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var signCmd = &cobra.Command{
-	Use:     "sign -u <username> -n",
-	Example: "sign -u username -n",
-	Run:     signRun,
-}
+func newSignCLI() *cobra.Command {
+	cli := &cobra.Command{
+		Use:     "sign -u <username> -n",
+		Example: "sign -u username -n",
+		Run:     signRun,
+	}
 
-func init() {
-	signCmd.PersistentFlags().StringP("username", "u", "", "username to use")
-	signCmd.PersistentFlags().BoolP("new", "n", false, "sign-in with new account")
+	cli.PersistentFlags().StringP("username", "u", "", "username to use")
+	cli.PersistentFlags().BoolP("new", "n", false, "sign-in with new account")
 
-	if err := viper.BindPFlags(signCmd.PersistentFlags()); err != nil {
+	if err := viper.BindPFlags(cli.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %s", err)
 	}
 
-	if err := signCmd.MarkPersistentFlagRequired("username"); err != nil {
+	if err := cli.MarkPersistentFlagRequired("username"); err != nil {
 		log.Errorf("failed to mark username flag as required: %s", err)
 	}
+
+	return cli
 }
 
 func signRun(_ *cobra.Command, _ []string) {

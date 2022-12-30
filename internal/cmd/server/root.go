@@ -21,14 +21,14 @@ import (
 	"github.com/VladBag2022/gokeeper/internal/store"
 )
 
-// Execute start GoKeeper server CLI.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+// Execute starts GoKeeper server CLI.
+func (c *CLI) Execute() {
+	if err := c.cmd.Execute(); err != nil {
 		log.Errorf("failed to execute root command: %s", err)
 	}
 }
 
-func rootRun(_ *cobra.Command, _ []string) {
+func (c *CLI) run(_ *cobra.Command, _ []string) {
 	ctx := context.Background()
 
 	listener, err := net.Listen("tcp", viper.GetString("ListenAddress"))
@@ -88,5 +88,5 @@ func rootRun(_ *cobra.Command, _ []string) {
 
 	grpcServer.GracefulStop()
 
-	common.SaveConfigOnDemand(saveConfig, configFile, "./gokeeperd.yaml")
+	common.SaveConfigOnDemand(c.saveConfig, c.configFile, "./gokeeperd.yaml")
 }

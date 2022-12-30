@@ -8,17 +8,15 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var credentialsCmd = &cobra.Command{
-	Use:     "credentials <username> <password>",
-	Example: "credentials user password",
-	Args: func(cmd *cobra.Command, args []string) error {
-		return cobra.ExactArgs(2)(cmd, args)
-	},
-	Run: credentialsRun,
-}
-
-func init() {
-	Cmd.AddCommand(credentialsCmd)
+func newCredentialsCLI() *cobra.Command {
+	return &cobra.Command{
+		Use:     "credentials <username> <password>",
+		Example: "credentials user password",
+		Args: func(cmd *cobra.Command, args []string) error {
+			return cobra.ExactArgs(2)(cmd, args)
+		},
+		Run: credentialsRun,
+	}
 }
 
 func credentialsRun(_ *cobra.Command, args []string) {

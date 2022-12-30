@@ -8,14 +8,12 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-var textCmd = &cobra.Command{
-	Use:     "text <string>",
-	Example: "text secret text",
-	Run:     textRun,
-}
-
-func init() {
-	Cmd.AddCommand(textCmd)
+func newTextCLI() *cobra.Command {
+	return &cobra.Command{
+		Use:     "text <string>",
+		Example: "text secret text",
+		Run:     textRun,
+	}
 }
 
 func textRun(_ *cobra.Command, args []string) {

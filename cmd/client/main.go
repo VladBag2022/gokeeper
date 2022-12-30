@@ -33,5 +33,5 @@ func main() {
 	fmt.Printf("Build date: %s\n", buildDate)
 	fmt.Printf("Build commit: %s\n\n", buildCommit)
 
-	client.Execute()
+	client.NewCLI().Execute()
 }

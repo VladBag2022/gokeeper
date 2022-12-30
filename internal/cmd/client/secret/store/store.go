@@ -15,17 +15,21 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-// Cmd is the primary command - "store".
-var Cmd = &cobra.Command{
-	Use: "store",
-}
+// NewCLI returns secret store CLI.
+func NewCLI() *cobra.Command {
+	cli := &cobra.Command{
+		Use: "store",
+	}
 
-func init() {
-	Cmd.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
+	cli.PersistentFlags().IntP("id", "i", 0, "secret ID to update")
 
-	if err := viper.BindPFlags(Cmd.PersistentFlags()); err != nil {
+	if err := viper.BindPFlags(cli.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %s", err)
 	}
+
+	cli.AddCommand(newCredentialsCLI(), newTextCLI(), newBase64CLI(), newCreditCardCLI())
+
+	return cli
 }
 
 // Secret stores provided secret on remote server with the help of gRPC.

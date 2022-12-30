@@ -13,22 +13,23 @@ import (
 	pb "github.com/VladBag2022/gokeeper/internal/proto"
 )
 
-func init() {
-	storeCmd.PersistentFlags().IntP("secret", "x", 0, "secret ID")
-	storeCmd.PersistentFlags().IntP("meta", "m", 0, "meta ID to update")
+func newStoreCLI() *cobra.Command {
+	cli := &cobra.Command{
+		Use:     "store [-x <secret_id>] [-m <meta_id>] <string>",
+		Example: "store -s 1 top secret",
+		Run:     storeRun,
+	}
 
-	if err := viper.BindPFlags(storeCmd.PersistentFlags()); err != nil {
+	cli.PersistentFlags().IntP("secret", "x", 0, "secret ID")
+	cli.PersistentFlags().IntP("meta", "m", 0, "meta ID to update")
+
+	if err := viper.BindPFlags(cli.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %s", err)
 	}
 
-	storeCmd.MarkFlagsMutuallyExclusive("secret", "meta")
-	Cmd.AddCommand(storeCmd)
-}
+	cli.MarkFlagsMutuallyExclusive("secret", "meta")
 
-var storeCmd = &cobra.Command{
-	Use:     "store [-x <secret_id>] [-m <meta_id>] <string>",
-	Example: "store -s 1 top secret",
-	Run:     storeRun,
+	return cli
 }
 
 func storeRun(_ *cobra.Command, args []string) {
