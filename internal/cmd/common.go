@@ -28,6 +28,7 @@ func InitConfig(configFile *string) func() {
 			log.Infof("using config file %s", *configFile)
 			viper.SetConfigFile(*configFile)
 			err := viper.ReadInConfig()
+
 			if err != nil {
 				log.Errorf("failed to read config file: %s", err)
 			}
@@ -41,6 +42,7 @@ func SaveConfigOnDemand(saveConfig bool, configFile, defaultConfigFile string) {
 		if len(configFile) == 0 {
 			configFile = defaultConfigFile
 		}
+
 		if err := viper.WriteConfigAs(configFile); err != nil {
 			log.Errorf("failed to write config: %s", err)
 		}

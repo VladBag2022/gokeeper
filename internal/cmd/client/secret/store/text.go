@@ -20,6 +20,7 @@ func init() {
 
 func textRun(_ *cobra.Command, args []string) {
 	text := strings.Join(args, " ")
+
 	Secret(&pb.Secret{
 		Data: []byte(text),
 		Kind: pb.SecretKind_SECRET_TEXT,

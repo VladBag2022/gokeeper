@@ -42,6 +42,7 @@ func TestManager_Verify(t *testing.T) {
 		secretKey     []byte
 		tokenDuration time.Duration
 	}
+
 	tests := []struct {
 		name        string
 		fields      fields
@@ -94,6 +95,7 @@ func TestManager_Verify(t *testing.T) {
 			wantErr:    true,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Manager{

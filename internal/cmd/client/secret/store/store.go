@@ -76,5 +76,6 @@ func Secret(secret *pb.Secret) {
 
 		return
 	}
+
 	fmt.Printf("Secret ID: %d\n", storedSecret.GetId())
 }
