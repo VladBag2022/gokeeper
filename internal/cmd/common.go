@@ -28,7 +28,6 @@ func InitConfig(configFile *string) func() {
 			log.Infof("using config file %s", *configFile)
 			viper.SetConfigFile(*configFile)
 			err := viper.ReadInConfig()
-
 			if err != nil {
 				log.Errorf("failed to read config file: %s", err)
 			}

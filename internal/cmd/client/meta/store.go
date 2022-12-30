@@ -61,7 +61,6 @@ func storeRun(_ *cobra.Command, args []string) {
 		Meta:     meta,
 		SecretId: secretID,
 	})
-
 	if err != nil {
 		log.Errorf("failed to store meta: %s", err)
 

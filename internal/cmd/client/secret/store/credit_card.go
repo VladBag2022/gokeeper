@@ -13,7 +13,7 @@ import (
 
 var creditCardCmd = &cobra.Command{
 	Use:     "credit-card <number> <month> <year> <cvv> <username>",
-	Example: "credit-card 1234123412341234 10 2020 123 User User",
+	Example: "credit-card 1234123412341234 10 2020 123 Owner",
 	Args: func(cmd *cobra.Command, args []string) error {
 		return cobra.MinimumNArgs(5)(cmd, args)
 	},

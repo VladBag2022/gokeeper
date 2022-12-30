@@ -37,7 +37,6 @@ func (m *Manager) Generate(userID int64) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(m.secretKey)
-
 	if err != nil {
 		return "", fmt.Errorf("failed to create signed string from token: %w", err)
 	}
