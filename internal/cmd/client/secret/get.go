@@ -55,6 +55,10 @@ func getRun(_ *cobra.Command, _ []string) {
 		return
 	}
 
+	printSecrets(secrets, sessionManager)
+}
+
+func printSecrets(secrets *pb.StoredSecrets, sessionManager *client.SessionManager) {
 fs:
 	for _, secret := range secrets.GetSecrets() {
 		data, dErr := sessionManager.Coder.Decrypt(secret.GetSecret().GetData())
