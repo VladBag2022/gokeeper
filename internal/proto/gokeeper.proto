@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+package gokeeper;
+
+option go_package = "gokeeper/internal/proto";
+
+message Credentials {
+  string username = 1;
+  string password = 2;
+}
+
+message Text {
+  string text = 1;
+}
+
+message BLOB {
+  bytes blob = 1;
+}
+
+message CreditCard {
+  string number = 1;
+  int32 year = 2;
+  int32 month = 3;
+  int32 cvv = 4;
+  string owner = 5;
+}
+
+message Meta {
+  string text = 1;
+}
+
+message StoreMetaRequest {
+  Meta meta = 1;
+  int64 secret_id = 2;
+}
+
+enum SecretKind {
+  SECRET_UNSPECIFIED = 0;
+  SECRET_CREDENTIALS = 1;
+  SECRET_TEXT = 2;
+  SECRET_BLOB = 3;
+  SECRET_CREDIT_CARD = 4;
+  SECRET_ENCRYPTED_KEY = 5;
+}
+
+message Secret {
+  bytes data = 1;
+  SecretKind kind = 2;
+}
+
+message StoredMeta {
+  Meta meta = 1;
+  int64 id = 2;
+}
+
+message StoredSecret {
+  Secret secret = 1;
+  repeated StoredMeta meta = 2;
+  int64 id = 3;
+}
+
+message StoredSecrets {
+  repeated StoredSecret secrets = 1;
+}
+
+message JWT {
+  string token = 1;
+}
+
+service Auth {
+  rpc SignIn(Credentials) returns (JWT);
+  rpc SignUp(Credentials) returns (JWT);
+}
+
+service Keeper {
+  rpc StoreSecret(Secret) returns (StoredSecret);
+  rpc UpdateSecret(StoredSecret) returns (google.protobuf.Empty);
+  rpc DeleteSecret(StoredSecret) returns (google.protobuf.Empty);
+
+  rpc StoreMeta(StoreMetaRequest) returns (StoredMeta);
+  rpc UpdateMeta(StoredMeta) returns (google.protobuf.Empty);
+  rpc DeleteMeta(StoredMeta) returns (google.protobuf.Empty);
+
+  rpc GetSecrets(google.protobuf.Empty) returns (StoredSecrets);
+  
+  rpc GetEncryptedKey(google.protobuf.Empty) returns (StoredSecret);
+}
